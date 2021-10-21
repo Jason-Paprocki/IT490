@@ -1,0 +1,1 @@
+@reboot /home/ubuntu/IT490/errorReporting/logginserver.php
