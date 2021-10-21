@@ -26,7 +26,7 @@ $fp = fopen('error.log', 'a');
 $current_timestamp = date('Y-m-d');
 $log = strval($current_timestamp)." ".$request["message"]."\n";
 fwrite($fp,$log);
-fclose($fp);
+fclose($fp);  
 
 echo "client received response: ".PHP_EOL;
 print_r($response);
