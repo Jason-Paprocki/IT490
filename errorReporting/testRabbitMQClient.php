@@ -19,12 +19,12 @@ $request['type'] = "Login";
 $request['username'] = "steve";
 $request['password'] = "password";
 $request['message'] = $msg;
-$response = $client->send_request($request);
-//$response = $client->publish($request);
+//$response = $client->send_request($request);
+$response = $client->publish($request);
 
 $fp = fopen('error.log', 'a');
 $current_timestamp = date('Y-m-d');
-$log = strval($current_timestamp)." ".$request["message"]."\n";
+$log = strval($current_timestamp)." ".$msg."\n";
 fwrite($fp,$log);
 fclose($fp);  
 
