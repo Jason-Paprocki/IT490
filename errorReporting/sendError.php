@@ -22,12 +22,6 @@ $request['message'] = $msg;
 //$response = $client->send_request($request);
 $response = $client->publish($request);
 
-$fp = fopen('error.log', 'a');
-$current_timestamp = date('Y-m-d');
-$log = strval($current_timestamp)." ".$msg."\n";
-fwrite($fp,$log);
-fclose($fp);  
-
 echo "client received response: ".PHP_EOL;
 print_r($response);
 echo "\n\n";
