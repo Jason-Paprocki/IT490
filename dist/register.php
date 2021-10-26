@@ -1,3 +1,36 @@
+<?php
+    ini_set('display_errors',1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+	session_start();
+	if(	   
+		isset($_POST["fname"])
+	&& isset($_POST["lname"])
+	&& isset($_POST["uname"])
+	&& isset($_POST["pword"])
+	)
+	{
+	$fname = $_POST["fname"];
+	$lname = $_POST["lname"];
+	$uname = $_POST["uname"];
+	$passwd = $_POST["pword"];
+	
+	require_once('path.inc');
+	require_once('get_host_info.inc');
+	require_once('rabbitMQLib.inc');
+
+	$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+	$request = array();
+	$request['type'] = "Register";
+	$request['username'] = $uname;
+	$request['password'] = $passwd;
+	$response = $client->send_request($request);
+	//$response = $client->publish($request);
+
+
+	}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +54,7 @@
 <div class="parallax p1" id="section-1">
       <hgroup>
         <h1>Login</h1>
-		<form>
+		<form name="regform" id="myForm" method="POST">
 		  <label for="fname">First Name:</label><br>
 		  <input type="text" id="fname" name="fname"><br><br>
 		  <label for="lname">Last Name:</label><br>
@@ -29,7 +62,7 @@
 		  <label for="uname">User name:</label><br>
 		  <input type="text" id="uname" name="uname"><br><br>
 		  <label for="lname">Password:</label><br>
-		  <input type="text" id="pword" name="pword"><br><br>
+		  <input type="password" id="pword" name="pword"><br><br>
 		  <input type="submit" value="Create Account"><br>
 		</form>
       </hgroup>
