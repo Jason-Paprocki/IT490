@@ -36,6 +36,7 @@ try{
 	$stmt = $db->prepare("create table if not exists `Users` (
 				`id` int auto_increment not null,
 				`email` varchar(100) not null unique,
+                `cookie` varchar(13)
                 `password` varchar(100) not null,
                 `fname` varchar(20) not null,
                 `lname` varchar(20) not null,

@@ -13,7 +13,7 @@ function register($user,$pass,$fname,$lname){
     $response = array();
     $response["success"] = true;
     //need to form a good syntax to send it
-    $response["COCK"] = ;
+    $response["COCK"] = uniqid();
     return $response;
 }
 
