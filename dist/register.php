@@ -7,14 +7,25 @@
 		isset($_POST["fname"])
 	&& isset($_POST["lname"])
 	&& isset($_POST["email"])
-	&& isset($_POST["pword"])
+	&& isset($_POST["pword"]
+	&& isset($_POST["conf_passwd"])
 	)
 	{
 		$fname = $_POST["fname"];
 		$lname = $_POST["lname"];
 		$email = $_POST["email"];
 		$passwd = $_POST["pword"];
-		
+		$conf_passwd = $_POST["conf_pword"];
+
+		//confirm that regular password is the same as the confirmation password
+		if($passwd == $conf_passwd)
+		{
+			echo "<script type='text/javascript'>alert('User has been registered');</script>";
+		}
+		else{
+			echo "<script type='text/javascript'>alert('Passwords do not match');</script>";
+			exit();
+		}
 		require_once('path.inc');
 		require_once('get_host_info.inc');
 		require_once('rabbitMQLib.inc');
@@ -31,6 +42,9 @@
 
 		if($$response["success"])
 		{
+			//is this the best way to do this?
+			//cookie needs to have exp date and shit
+			//thing is we need to parse that
 			?>
 				<script type="text/JavaScript">
 					document.cookie = $response["COCK"]; 
@@ -80,6 +94,8 @@
 		  <input type="text" id="email" name="email"><br><br>
 		  <label for="pword">Password:</label><br>
 		  <input type="password" id="pword" name="pword"><br><br>
+		  <label for="conf_pword">Confirm Password:</label><br>
+		  <input type="password" id="conf_pword" name="conf_pword"><br><br>
 		  <input type="submit" value="Create Account"><br>
 		</form>
       </hgroup>

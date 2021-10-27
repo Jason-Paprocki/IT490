@@ -53,6 +53,7 @@ function register($user,$pass,$fname,$lname){
 		{
 			$response["COCK"] = uniqid();
 			$response["cookie_exp_date"] = time();
+			//need to hash with salt so idk
 			$id = md5(uniqid(rand(), true));
 			//hashing password
 			$pass = password_hash($pass, PASSWORD_BCRYPT);
