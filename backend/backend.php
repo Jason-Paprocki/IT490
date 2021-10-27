@@ -33,7 +33,7 @@ function login($user,$pass){
 	//TODO validate user credentials
 	return true;
 }
-function register($user,$pass,$fname,$lname){
+function register($email,$pass,$fname,$lname){
 	//check if the email is in use already
 	$response = array();
     try
@@ -51,7 +51,9 @@ function register($user,$pass,$fname,$lname){
 		}
 		else
 		{
+			//this is a 13 character shitter; alphanumeric
 			$response["COCK"] = uniqid();
+			//epoch time thing idk how long it is; gl db script
 			$response["cookie_exp_date"] = time();
 			//need to hash with salt so idk
 			$id = md5(uniqid(rand(), true));
@@ -61,20 +63,16 @@ function register($user,$pass,$fname,$lname){
 			//CREATE PROPER SQL STATEMENT
 			//REFRENCE INIT_DB.PHP
 			$stmt = $db->prepare("INSERT INTO `Users`
-                        (id, email, cookie, cookie_exp_date) VALUES
-                        (:id, :email, :cookie,:cookie_exp_date)");
+                        (id, email, cookie, cookie_exp_date, password, fname, lname) VALUES
+                        (:id, :email, :cookie,:cookie_exp_date, :password, :fname, :lname)");
 			$params = array(":id" => $id,
 							":email"=> $email, 
 							":cookie"=> $response["COCK"],
 							":cookie_exp_date" => $response["cookie_exp_date"],
-
-						);
+							":password"=> $pass,
+							":fname"=> $fname,
+							":lname"=> $lname);
 			$stmt->execute($params);
-
-
-
-
-
 			$response["success"] = true;
 			return $response;
 		}	
@@ -118,13 +116,11 @@ function request_processor($req){
 	$type = $req['type'];
 	switch($type){
 		case "login":
-			return login($req['username'], $req['password']);
+			return login($req['email'], $req['password']);
         case "register":
-            return register($req['username'], $req['password'],$req['fname'],$req['lname']);
+            return register($req['email'], $req['password'],$req['fname'],$req['lname']);
         case "validate_session":
 			return validate($req['session_id']);
-		case "echo":
-			return array("return_code"=>'0', "message"=>"Echo: " .$req["message"]);
 	}
 	return array("return_code" => '0',
 		"message" => "Server received request and processed it");

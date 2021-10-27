@@ -7,7 +7,7 @@
 		isset($_POST["fname"])
 	&& isset($_POST["lname"])
 	&& isset($_POST["email"])
-	&& isset($_POST["pword"]
+	&& isset($_POST["pword"])
 	&& isset($_POST["conf_passwd"])
 	)
 	{
@@ -18,11 +18,8 @@
 		$conf_passwd = $_POST["conf_pword"];
 
 		//confirm that regular password is the same as the confirmation password
-		if($passwd == $conf_passwd)
+		if($passwd != $conf_passwd)
 		{
-			echo "<script type='text/javascript'>alert('User has been registered');</script>";
-		}
-		else{
 			echo "<script type='text/javascript'>alert('Passwords do not match');</script>";
 			exit();
 		}
@@ -52,10 +49,13 @@
 			<?php
 			//make the header go to the account page
 			header('Location: /account.php');
+			//check in account if there is a redirect and be like "hello user name or whatever"
 			exit();
 		}
 		else
 		{
+			//tbh idk what this is
+			//prob need to check up on this
 			echo "<script type='text/javascript'>alert('You are a failure');</script>";
 			exit();
 		}
