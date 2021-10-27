@@ -8,6 +8,14 @@ function login($user,$pass){
 	//TODO validate user credentials
 	return true;
 }
+function register($user,$pass,$fname,$lname){
+    //PHP CODE TO SEND TO SQL TABLE
+    $response = array();
+    $response["success"] = true;
+    //need to form a good syntax to send it
+    $response["COCK"] = ;
+    return $response;
+}
 
 function request_processor($req){
 	echo "Received Request".PHP_EOL;
@@ -20,7 +28,9 @@ function request_processor($req){
 	switch($type){
 		case "login":
 			return login($req['username'], $req['password']);
-		case "validate_session":
+        case "register":
+            return register($req['username'], $req['password'],$req['fname'],$req['lname']);
+        case "validate_session":
 			return validate($req['session_id']);
 		case "echo":
 			return array("return_code"=>'0', "message"=>"Echo: " .$req["message"]);
