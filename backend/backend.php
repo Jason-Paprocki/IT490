@@ -52,19 +52,22 @@ function register($user,$pass,$fname,$lname){
 		else
 		{
 			$response["COCK"] = uniqid();
-			$response["cookie_exp"] = time();
+			$response["cookie_exp_date"] = time();
 			$id = md5(uniqid(rand(), true));
-
+			//hashing password
+			$pass = password_hash($pass, PASSWORD_BCRYPT);
 			//NOT FINISHED
 			//CREATE PROPER SQL STATEMENT
 			//REFRENCE INIT_DB.PHP
 			$stmt = $db->prepare("INSERT INTO `Users`
-                        (id, email, cookie, endDate) VALUES
-                        (:id, :email, :cookie,:endDate)");
+                        (id, email, cookie, cookie_exp_date) VALUES
+                        (:id, :email, :cookie,:cookie_exp_date)");
 			$params = array(":id" => $id,
 							":email"=> $email, 
 							":cookie"=> $response["COCK"],
-							":endDate" => $endDate);
+							":cookie_exp_date" => $response["cookie_exp_date"],
+
+						);
 			$stmt->execute($params);
 
 
