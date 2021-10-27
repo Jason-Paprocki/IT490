@@ -24,6 +24,22 @@
 	$response = $client->send_request($request);
 //$response = $client->publish($request);
 
+        if($$response["success"])
+        {
+            ?>
+            <script type="text/JavaScript">
+                document.cookie = $response["COCK"];
+            </script>
+            <?php
+            //make the header go to the account page
+            header('Location: /account.php');
+            exit();
+        }
+        else
+        {
+            echo "<script type='text/javascript'>alert('You are a failure');</script>";
+            exit();
+        }
 
 }
 ?>
@@ -55,6 +71,7 @@
               <input type="text" id="uname" name="uname"><br><br>
               <label for="lname">Password:</label><br>
               <input type="password" id="pword" name="pword"><br><br>
+              <a href="register.php">Don't have an account? Create an account here</a><br><br>
               <input type="submit" value="Login"><br>
           </form>
       </hgroup>
