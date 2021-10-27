@@ -31,7 +31,8 @@ function send_to_databse(){
 
 function login($user,$pass){
 	$response = array();
-	try{
+	try
+	{
 		$db = new PDO($connection_string, $dbuser, $dbpass);
 		$stmt = $db->prepare("SELECT email, password from `Users` where email = :email LIMIT 1");
 		$params = array(":email"=> $email);
@@ -47,9 +48,13 @@ function login($user,$pass){
 				$response["COCK"] = uniqid();
 				//epoch time thing idk how long it is; gl db script
 				$response["cookie_exp_date"] = time();
-				header("Location: /account.php");
+				return True;
 				
 			}
+		}
+		else
+		{
+			return false;
 		}
 	}
 	catch(Exception $e){
