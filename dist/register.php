@@ -70,7 +70,7 @@
 
 <div class="parallax p1" id="section-1">
       <hgroup>
-        <h1>Login</h1>
+        <h1>Register</h1>
 		<form name="regform" id="myForm" method="POST">
 		  <label for="fname">First Name:</label><br>
 		  <input type="text" id="fname" name="fname"><br><br>

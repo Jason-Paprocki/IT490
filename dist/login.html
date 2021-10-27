@@ -1,3 +1,35 @@
+<?php
+    ini_set('display_errors',1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+	session_start();
+	if(
+		isset($_POST["fname"])
+	&& isset($_POST["lname"])
+	&& isset($_POST["uname"])
+	&& isset($_POST["pword"])
+	)
+	{
+	$fname = $_POST["fname"];
+	$lname = $_POST["lname"];
+	$uname = $_POST["uname"];
+	$passwd = $_POST["pword"];
+
+	require_once('path.inc');
+	require_once('get_host_info.inc');
+	require_once('rabbitMQLib.inc');
+
+	$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+	$request = array();
+	$request['type'] = "Register";
+	$request['username'] = $uname;
+	$request['password'] = $passwd;
+	$response = $client->send_request($request);
+//$response = $client->publish($request);
+
+
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
