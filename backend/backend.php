@@ -30,8 +30,36 @@ function send_to_databse(){
 }
 
 function login($user,$pass){
-	//TODO validate user credentials
-	return true;
+	$response = array();
+	try{
+		$db = new PDO($connection_string, $dbuser, $dbpass);
+		$stmt = $db->prepare("SELECT email, password from `Users` where email = :email LIMIT 1");
+		$params = array(":email"=> $email);
+		$stmt->execute($params);
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		if($result)
+		{
+			$userpassword = $result['password'];
+			if(password_verify($pass, $userpassword))
+			{
+				//give the user a cookie
+				header("Location: /account.php");
+				
+			}
+		}
+	}
+	catch(Exception $e){
+		echo $e->getMessage();
+		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+		$request = array();
+		$request['type'] = "Error";
+		$request['message'] = $e;
+		//$response = $client->send_request($request);
+		$response = $client->publish($request);
+	
+		echo "sent error".PHP_EOL;
+		exit("It didn't work");
+	}
 }
 function register($email,$pass,$fname,$lname){
 	//check if the email is in use already

@@ -4,44 +4,43 @@
     error_reporting(E_ALL);
 	session_start();
 	if(
-        isset($_POST["uname"])
+        isset($_POST["email"])
 	&& isset($_POST["pword"])
 	)
 
 	{
-	$uname = $_POST["uname"];
-	$passwd = $_POST["pword"];
+        $uname = $_POST["uname"];
+        $passwd = $_POST["pword"];
 
-	require_once('path.inc');
-	require_once('get_host_info.inc');
-	require_once('rabbitMQLib.inc');
+        require_once('path.inc');
+        require_once('get_host_info.inc');
+        require_once('rabbitMQLib.inc');
 
-	$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
-	$request = array();
-	$request['type'] = "Register";
-	$request['username'] = $uname;
-	$request['password'] = $passwd;
-	$response = $client->send_request($request);
-//$response = $client->publish($request);
+        $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+        $request = array();
+        $request['type'] = "login";
+        $request['username'] = $uname;
+        $request['password'] = $passwd;
+        $response = $client->send_request($request);
+        //$response = $client->publish($request);
 
-        if($$response["success"])
-        {
-            ?>
-            <script type="text/JavaScript">
-                document.cookie = $response["COCK"];
-            </script>
-            <?php
-            //make the header go to the account page
-            header('Location: /account.php');
-            exit();
-        }
-        else
-        {
-            echo "<script type='text/javascript'>alert('You are a failure');</script>";
-            exit();
-        }
-
-}
+            if($$response["success"])
+            {
+                ?>
+                <script type="text/JavaScript">
+                    document.cookie = $response["COCK"];
+                </script>
+                <?php
+                //make the header go to the account page
+                header('Location: /account.php');
+                exit();
+            }
+            else
+            {
+                echo "<script type='text/javascript'>alert('You are a failure');</script>";
+                exit();
+            }
+    }
 ?>
 <!DOCTYPE html>
 <html>

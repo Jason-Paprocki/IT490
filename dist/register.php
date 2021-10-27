@@ -37,7 +37,7 @@
 		$response = $client->send_request($request);
 		//$response = $client->publish($request);
 
-		if($$response["success"])
+		if($response["success"])
 		{
 			//is this the best way to do this?
 			//cookie needs to have exp date and shit
@@ -56,7 +56,7 @@
 		{
 			//tbh idk what this is
 			//prob need to check up on this
-			echo "<script type='text/javascript'>alert('You are a failure');</script>";
+			echo $response["msg"];
 			exit();
 		}
 
