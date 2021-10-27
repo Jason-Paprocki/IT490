@@ -5,14 +5,13 @@ require("config.php");
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-echo "DBUser: " .  $dbuser;
 
 $connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
 //CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
 try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Connected to create database\n";
-	$stmt = $db->prepare("CREATE DATABASE [IF NOT EXISTS] Pet_Service");
+	$stmt = $db->prepare("CREATE DATABASE IF NOT EXISTS Pet_Service");
 	$stmt->execute();
 	echo var_export($stmt->errorInfo(), true);
 }
@@ -36,7 +35,8 @@ try{
 	$stmt = $db->prepare("create table if not exists `Users` (
 				`id` int auto_increment not null,
 				`email` varchar(100) not null unique,
-                `cookie` varchar(13)
+                `cookie` varchar(13),
+                `cookie_exp_date` varchar(30),
                 `password` varchar(100) not null,
                 `fname` varchar(20) not null,
                 `lname` varchar(20) not null,
@@ -46,6 +46,7 @@ try{
 	$stmt->execute();
 	echo var_export($stmt->errorInfo(), true);
 }
+//sends error message to every machine
 catch(Exception $e){
     echo $e->getMessage();
     $client = new rabbitMQClient("testRabbitMQ.ini","testServer");

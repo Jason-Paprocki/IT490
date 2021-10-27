@@ -1,20 +1,107 @@
 <?php
 
+require("config.php");
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
+
+$connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
+
+function send_to_databse(){
+	try{
+		$db = new PDO($connection_string, $dbuser, $dbpass);
+		echo "Connected to create database\n";
+		$stmt = $db->prepare("CREATE DATABASE IF NOT EXISTS Pet_Service");
+		$stmt->execute();
+		echo var_export($stmt->errorInfo(), true);
+	}
+	catch(Exception $e){
+		echo $e->getMessage();
+		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+		$request = array();
+		$request['type'] = "Error";
+		$request['message'] = $e;
+		//$response = $client->send_request($request);
+		$response = $client->publish($request);
+	
+		echo "sent error".PHP_EOL;
+		exit("It didn't work");
+	}	
+}
 
 function login($user,$pass){
 	//TODO validate user credentials
 	return true;
 }
 function register($user,$pass,$fname,$lname){
-    //PHP CODE TO SEND TO SQL TABLE
-    $response = array();
-    $response["success"] = true;
-    //need to form a good syntax to send it
-    $response["COCK"] = uniqid();
-    return $response;
+	//check if the email is in use already
+	$response = array();
+    try
+    {        
+        $stmt = $db->prepare("SELECT email from `Users` where email = :email ");
+        $params = array(":email"=> $email);
+        $stmt->execute($params);
+        $result = $stmt->fetchAll();
+
+		if ($result[0]["email"] != NULL)
+		{
+			$response["success"] = FALSE;
+			$response["msg"] = "Email already in use"
+			exit();
+		}
+		else
+		{
+			$response["COCK"] = uniqid();
+			$response["cookie_exp"] = time();
+			$id = md5(uniqid(rand(), true));
+
+			//NOT FINISHED
+			//CREATE PROPER SQL STATEMENT
+			//REFRENCE INIT_DB.PHP
+			$stmt = $db->prepare("INSERT INTO `Users`
+                        (id, email, cookie, endDate) VALUES
+                        (:id, :email, :cookie,:endDate)");
+			$params = array(":id" => $id,
+							":email"=> $email, 
+							":cookie"=> $response["COCK"],
+							":endDate" => $endDate);
+			$stmt->execute($params);
+
+
+
+
+
+			$response["success"] = true;
+			return $response;
+		}	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+    catch(Exception $e)
+    {
+		echo $e->getMessage();
+		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+		$request = array();
+		$request['type'] = "Error";
+		$request['message'] = $e;
+		//$response = $client->send_request($request);
+		$response = $client->publish($request);
+	
+		echo "sent error".PHP_EOL;
+		exit("It didn't work");
+    }
 }
 
 function request_processor($req){

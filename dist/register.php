@@ -6,13 +6,13 @@
 	if(	   
 		isset($_POST["fname"])
 	&& isset($_POST["lname"])
-	&& isset($_POST["uname"])
+	&& isset($_POST["email"])
 	&& isset($_POST["pword"])
 	)
 	{
 		$fname = $_POST["fname"];
 		$lname = $_POST["lname"];
-		$uname = $_POST["uname"];
+		$email = $_POST["email"];
 		$passwd = $_POST["pword"];
 		
 		require_once('path.inc');
@@ -22,7 +22,7 @@
 		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 		$request = array();
 		$request['type'] = "register";
-		$request['username'] = $uname;
+		$request['email'] = $email;
 		$request['password'] = $passwd;
 		$request['lname'] = $lname;
 		$request['fname'] = $fname;
@@ -76,8 +76,8 @@
 		  <input type="text" id="fname" name="fname"><br><br>
 		  <label for="lname">Last Name:</label><br>
 		  <input type="text" id="lname" name="lname"><br><br>
-		  <label for="uname">User name:</label><br>
-		  <input type="text" id="uname" name="uname"><br><br>
+		  <label for="email">Email:</label><br>
+		  <input type="text" id="email" name="email"><br><br>
 		  <label for="pword">Password:</label><br>
 		  <input type="password" id="pword" name="pword"><br><br>
 		  <input type="submit" value="Create Account"><br>
