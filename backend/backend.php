@@ -43,6 +43,10 @@ function login($user,$pass){
 			if(password_verify($pass, $userpassword))
 			{
 				//give the user a cookie
+				//this is a 13 character shitter; alphanumeric
+				$response["COCK"] = uniqid();
+				//epoch time thing idk how long it is; gl db script
+				$response["cookie_exp_date"] = time();
 				header("Location: /account.php");
 				
 			}
