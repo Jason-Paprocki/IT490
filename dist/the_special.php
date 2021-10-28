@@ -15,10 +15,11 @@
 		
 		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 		$request = array();
-		$request['type'] = "Error";
+        date_default_timezone_set("America/New_York");
+        $request["time"] = date("h:i:sa");
+		$request['machine'] = "broker";
 		$msg = strval($e->getMessage());
 		$request['message'] = $msg;
-		//$response = $client->send_request($request);
 		$response = $client->publish($request);
-		exit("It didn't work\nsent error");
+		exit("sent error");
 	}
