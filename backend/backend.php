@@ -20,12 +20,10 @@ function send_to_databse(){
 		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 		$request = array();
 		$request['type'] = "Error";
-		$request['message'] = $e;
+		$request['message'] = strval($e->getMessage());
 		//$response = $client->send_request($request);
 		$response = $client->publish($request);
-	
-		echo "sent error".PHP_EOL;
-		exit("It didn't work");
+		exit("sent error");
 	}	
 }
 
