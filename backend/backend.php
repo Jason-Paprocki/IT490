@@ -43,6 +43,8 @@ function login($user,$pass){
 			{
 				//give the user a cookie
 				//this is a 13 character shitter; alphanumeric
+				//TODO
+				//needs to update the cookie in the sql table
 				$response["cookie"] = uniqid();
 				return True;
 				
