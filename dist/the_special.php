@@ -21,5 +21,5 @@
 		$msg = strval($e->getMessage());
 		$request['message'] = $msg;
 		$response = $client->publish($request);
-		exit("sent error");
+		exit("sent error \n");
 	}
