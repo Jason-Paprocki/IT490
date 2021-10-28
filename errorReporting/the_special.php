@@ -22,3 +22,4 @@
 		$response = $client->publish($request);
 		exit("It didn't work\nsent error");
 	}
+
