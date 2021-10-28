@@ -1,7 +1,7 @@
 <?php
-    ini_set('display_errors',1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
+	require_once('path.inc');
+	require_once('get_host_info.inc');
+	require_once('rabbitMQLib.inc');
 	session_start();
 	if(	   
 		isset($_POST["fname"])
@@ -23,10 +23,8 @@
 			echo "<script type='text/javascript'>alert('Passwords do not match');</script>";
 			exit();
 		}
-		require_once('path.inc');
-		require_once('get_host_info.inc');
-		require_once('rabbitMQLib.inc');
 
+		//there are some dog ass files that need to be sent in order to make this work
 		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 		$request = array();
 		$request['type'] = "register";
@@ -44,7 +42,20 @@
 			//thing is we need to parse that
 			?>
 				<script type="text/JavaScript">
-					document.cookie = $response["COCK"]; 
+				function deleteAllCookies() 
+				{
+					var cookies = document.cookie.split(";");
+
+					for (var i = 0; i < cookies.length; i++) 
+					{
+						var cookie = cookies[i];
+						var eqPos = cookie.indexOf("=");
+						var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+						document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT";
+					}
+				}
+				deleteAllCookies();
+				document.cookie = $response["cookie"]; 
 				</script>
 			<?php
 			//make the header go to the account page

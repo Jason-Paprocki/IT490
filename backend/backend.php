@@ -17,7 +17,7 @@ function send_to_databse(){
 	}
 	catch(Exception $e){
 		echo $e->getMessage();
-		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 		$request = array();
 		$request['type'] = "Error";
 		$request['message'] = $e;
@@ -45,7 +45,7 @@ function login($user,$pass){
 			{
 				//give the user a cookie
 				//this is a 13 character shitter; alphanumeric
-				$response["COCK"] = uniqid();
+				$response["cookie"] = uniqid();
 				//epoch time thing idk how long it is; gl db script
 				$response["cookie_exp_date"] = time();
 				return True;
@@ -89,7 +89,7 @@ function register($email,$pass,$fname,$lname){
 		else
 		{
 			//this is a 13 character shitter; alphanumeric
-			$response["COCK"] = uniqid();
+			$response["cookie"] = uniqid();
 			//epoch time thing idk how long it is; gl db script
 			$response["cookie_exp_date"] = time();
 			//need to hash with salt so idk
@@ -104,7 +104,7 @@ function register($email,$pass,$fname,$lname){
                         (:id, :email, :cookie,:cookie_exp_date, :password, :fname, :lname)");
 			$params = array(":id" => $id,
 							":email"=> $email, 
-							":cookie"=> $response["COCK"],
+							":cookie"=> $response["cookie"],
 							":cookie_exp_date" => $response["cookie_exp_date"],
 							":password"=> $pass,
 							":fname"=> $fname,
@@ -147,6 +147,7 @@ function request_processor($req){
 	echo "Received Request".PHP_EOL;
 	echo "<pre>" . var_dump($req) . "</pre>";
 	if(!isset($req['type'])){
+		//gotta send this dog ass error out
 		return "Error: unsupported message type";
 	}
 	//Handle message type
