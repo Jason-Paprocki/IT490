@@ -37,6 +37,7 @@
 
 		if($response["success"])
 		{
+			$js_cookie = "id=" . $response["cookie"];
 			//is this the best way to do this?
 			//cookie needs to have exp date and shit
 			//thing is we need to parse that
@@ -55,7 +56,13 @@
 					}
 				}
 				deleteAllCookies();
-				document.cookie = $response["cookie"]; 
+				//super scuffed way to create an expiration date
+				//make better?
+				const d = new Date();
+				d.setTime(d.getTime() + (24 * 60 * 60 * 1000));
+				let expires = ";expires="+d.toUTCString();
+				//set the cookie in js
+				document.cookie = "<?php echo $js_cookie?>" + expires; 
 				</script>
 			<?php
 			//make the header go to the account page
