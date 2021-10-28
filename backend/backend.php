@@ -44,8 +44,6 @@ function login($user,$pass){
 				//give the user a cookie
 				//this is a 13 character shitter; alphanumeric
 				$response["cookie"] = uniqid();
-				//epoch time thing idk how long it is; gl db script
-				$response["cookie_exp_date"] = time();
 				return True;
 				
 			}
@@ -88,8 +86,6 @@ function register($email,$pass,$fname,$lname){
 		{
 			//this is a 13 character shitter; alphanumeric
 			$response["cookie"] = uniqid();
-			//epoch time thing idk how long it is; gl db script
-			$response["cookie_exp_date"] = time();
 			//need to hash with salt so idk
 			$id = md5(uniqid(rand(), true));
 			//hashing password
@@ -98,12 +94,11 @@ function register($email,$pass,$fname,$lname){
 			//CREATE PROPER SQL STATEMENT
 			//REFRENCE INIT_DB.PHP
 			$stmt = $db->prepare("INSERT INTO `Users`
-                        (id, email, cookie, cookie_exp_date, password, fname, lname) VALUES
-                        (:id, :email, :cookie,:cookie_exp_date, :password, :fname, :lname)");
+                        (id, email, cookie, password, fname, lname) VALUES
+                        (:id, :email, :cookie, :password, :fname, :lname)");
 			$params = array(":id" => $id,
 							":email"=> $email, 
 							":cookie"=> $response["cookie"],
-							":cookie_exp_date" => $response["cookie_exp_date"],
 							":password"=> $pass,
 							":fname"=> $fname,
 							":lname"=> $lname);
