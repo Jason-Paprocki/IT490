@@ -3,9 +3,9 @@
 //`sudo apt-get install php*-mysql` 
 //sudo service apache2 restart
 require("config.php");
-require_once('path.inc');
-require_once('get_host_info.inc');
-require_once('rabbitMQLib.inc');
+require_once('rabbit/path.inc');
+require_once('rabbit/get_host_info.inc');
+require_once('rabbit/rabbitMQLib.inc');
 
 $connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
 //CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
@@ -34,10 +34,9 @@ try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Created to create Users table\n";
 	$stmt = $db->prepare("create table if not exists `Users` (
-				`id` int auto_increment not null,
+				`id` varchar(32) not null,
 				`email` varchar(100) not null unique,
                 `cookie` varchar(13),
-                `cookie_exp_date` varchar(30),
                 `password` varchar(100) not null,
                 `fname` varchar(20) not null,
                 `lname` varchar(20) not null,
