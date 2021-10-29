@@ -1,6 +1,7 @@
-
+#!/usr/bin/php
 <?php
-
+//`sudo apt-get install php*-mysql` 
+//sudo service apache2 restart
 require("config.php");
 require_once('path.inc');
 require_once('get_host_info.inc');

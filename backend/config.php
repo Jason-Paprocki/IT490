@@ -1,6 +1,7 @@
 <?php
-    $host="backend-VirtualBox";
-    $database="Pet_Service";
-    $username="root";
-    $password="backend";
+    //$dbhost="backend-VirtualBox";
+    $dbhost="localhost";
+    $dbdatabase="Pet_Service";
+    $dbuser="root";
+    $dbpass="backend";
 ?>
