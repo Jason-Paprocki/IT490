@@ -60,7 +60,7 @@ function login($user,$pass){
 		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 		$request = array();
 		$request['type'] = "Error";
-		$request['message'] = $e;
+		$request['message'] = strval($e->getMessage());
 		//$response = $client->send_request($request);
 		$response = $client->publish($request);
 	

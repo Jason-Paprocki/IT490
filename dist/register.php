@@ -43,26 +43,14 @@
 			//thing is we need to parse that
 			?>
 				<script type="text/JavaScript">
-				function deleteAllCookies() 
-				{
-					var cookies = document.cookie.split(";");
-
-					for (var i = 0; i < cookies.length; i++) 
-					{
-						var cookie = cookies[i];
-						var eqPos = cookie.indexOf("=");
-						var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-						document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT";
-					}
-				}
-				deleteAllCookies();
-				//super scuffed way to create an expiration date
-				//make better?
-				const d = new Date();
-				d.setTime(d.getTime() + (24 * 60 * 60 * 1000));
-				let expires = ";expires="+d.toUTCString();
-				//set the cookie in js
-				document.cookie = "<?php echo $js_cookie?>" + expires; 
+				//delete cookie
+				document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+				//set cookie
+				//generate date 1 hour in the future
+				var date = new Date();
+				date.setTime(date.getTime() + (1*60*60*1000));
+				document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
+				
 				</script>
 			<?php
 			//make the header go to the account page
