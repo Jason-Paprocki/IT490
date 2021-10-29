@@ -17,23 +17,58 @@ function send_to_databse(){
 	}
 	catch(Exception $e){
 		echo $e->getMessage();
+		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+		$request = array();
+		$request['type'] = "Error";
+		$request['message'] = strval($e->getMessage());
+		//$response = $client->send_request($request);
+		$response = $client->publish($request);
+		exit("sent error");
+	}	
+}
+
+function login($user,$pass){
+	$response = array();
+	try
+	{
+		$db = new PDO($connection_string, $dbuser, $dbpass);
+		$stmt = $db->prepare("SELECT email, password from `Users` where email = :email LIMIT 1");
+		$params = array(":email"=> $email);
+		$stmt->execute($params);
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		if($result)
+		{
+			$userpassword = $result['password'];
+			if(password_verify($pass, $userpassword))
+			{
+				//give the user a cookie
+				//this is a 13 character shitter; alphanumeric
+				//TODO
+				//needs to update the cookie in the sql table
+				$response["cookie"] = uniqid();
+				return True;
+				
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	catch(Exception $e){
+		echo $e->getMessage();
 		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
 		$request = array();
 		$request['type'] = "Error";
-		$request['message'] = $e;
+		$request['message'] = strval($e->getMessage());
 		//$response = $client->send_request($request);
 		$response = $client->publish($request);
 	
 		echo "sent error".PHP_EOL;
 		exit("It didn't work");
-	}	
+	}
 }
-
-function login($user,$pass){
-	//TODO validate user credentials
-	return true;
-}
-function register($user,$pass,$fname,$lname){
+function register($email,$pass,$fname,$lname){
 	//check if the email is in use already
 	$response = array();
     try
@@ -51,8 +86,9 @@ function register($user,$pass,$fname,$lname){
 		}
 		else
 		{
-			$response["COCK"] = uniqid();
-			$response["cookie_exp_date"] = time();
+			//this is a 13 character shitter; alphanumeric
+			$response["cookie"] = uniqid();
+			//need to hash with salt so idk
 			$id = md5(uniqid(rand(), true));
 			//hashing password
 			$pass = password_hash($pass, PASSWORD_BCRYPT);
@@ -60,20 +96,15 @@ function register($user,$pass,$fname,$lname){
 			//CREATE PROPER SQL STATEMENT
 			//REFRENCE INIT_DB.PHP
 			$stmt = $db->prepare("INSERT INTO `Users`
-                        (id, email, cookie, cookie_exp_date) VALUES
-                        (:id, :email, :cookie,:cookie_exp_date)");
+                        (id, email, cookie, password, fname, lname) VALUES
+                        (:id, :email, :cookie, :password, :fname, :lname)");
 			$params = array(":id" => $id,
 							":email"=> $email, 
-							":cookie"=> $response["COCK"],
-							":cookie_exp_date" => $response["cookie_exp_date"],
-
-						);
+							":cookie"=> $response["cookie"],
+							":password"=> $pass,
+							":fname"=> $fname,
+							":lname"=> $lname);
 			$stmt->execute($params);
-
-
-
-
-
 			$response["success"] = true;
 			return $response;
 		}	
@@ -111,19 +142,18 @@ function request_processor($req){
 	echo "Received Request".PHP_EOL;
 	echo "<pre>" . var_dump($req) . "</pre>";
 	if(!isset($req['type'])){
+		//gotta send this dog ass error out
 		return "Error: unsupported message type";
 	}
 	//Handle message type
 	$type = $req['type'];
 	switch($type){
 		case "login":
-			return login($req['username'], $req['password']);
+			return login($req['email'], $req['password']);
         case "register":
-            return register($req['username'], $req['password'],$req['fname'],$req['lname']);
+            return register($req['email'], $req['password'],$req['fname'],$req['lname']);
         case "validate_session":
 			return validate($req['session_id']);
-		case "echo":
-			return array("return_code"=>'0', "message"=>"Echo: " .$req["message"]);
 	}
 	return array("return_code" => '0',
 		"message" => "Server received request and processed it");

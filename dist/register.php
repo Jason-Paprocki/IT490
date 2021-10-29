@@ -1,24 +1,30 @@
 <?php
-    ini_set('display_errors',1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
+	require_once('rabbit/path.inc');
+	require_once('rabbit/get_host_info.inc');
+	require_once('rabbit/rabbitMQLib.inc');
 	session_start();
 	if(	   
 		isset($_POST["fname"])
 	&& isset($_POST["lname"])
 	&& isset($_POST["email"])
 	&& isset($_POST["pword"])
+	&& isset($_POST["conf_passwd"])
 	)
 	{
 		$fname = $_POST["fname"];
 		$lname = $_POST["lname"];
 		$email = $_POST["email"];
 		$passwd = $_POST["pword"];
-		
-		require_once('path.inc');
-		require_once('get_host_info.inc');
-		require_once('rabbitMQLib.inc');
+		$conf_passwd = $_POST["conf_pword"];
 
+		//confirm that regular password is the same as the confirmation password
+		if($passwd != $conf_passwd)
+		{
+			echo "<script type='text/javascript'>alert('Passwords do not match');</script>";
+			exit();
+		}
+
+		//there are some dog ass files that need to be sent in order to make this work
 		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 		$request = array();
 		$request['type'] = "register";
@@ -29,20 +35,34 @@
 		$response = $client->send_request($request);
 		//$response = $client->publish($request);
 
-		if($$response["success"])
+		if($response["success"])
 		{
+			$js_cookie = "id=" . $response["cookie"];
+			//is this the best way to do this?
+			//cookie needs to have exp date and shit
+			//thing is we need to parse that
 			?>
 				<script type="text/JavaScript">
-					document.cookie = $response["COCK"]; 
+				//delete cookie
+				document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+				//set cookie
+				//generate date 1 hour in the future
+				var date = new Date();
+				date.setTime(date.getTime() + (1*60*60*1000));
+				document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
+
 				</script>
 			<?php
 			//make the header go to the account page
 			header('Location: /account.php');
+			//check in account if there is a redirect and be like "hello user name or whatever"
 			exit();
 		}
 		else
 		{
-			echo "<script type='text/javascript'>alert('You are a failure');</script>";
+			//tbh idk what this is
+			//prob need to check up on this
+			echo $response["msg"];
 			exit();
 		}
 
@@ -80,6 +100,8 @@
 		  <input type="text" id="email" name="email"><br><br>
 		  <label for="pword">Password:</label><br>
 		  <input type="password" id="pword" name="pword"><br><br>
+		  <label for="conf_pword">Confirm Password:</label><br>
+		  <input type="password" id="conf_pword" name="conf_pword"><br><br>
 		  <input type="submit" value="Create Account"><br>
 		</form>
       </hgroup>

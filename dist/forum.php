@@ -1,3 +1,19 @@
+<?php
+
+//check if id cookie is set
+if(!isset($_COOKIE['id'])){
+  header("/login.php");
+  exit();
+}
+
+
+
+?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en" >
 <head>

@@ -4,44 +4,66 @@
     error_reporting(E_ALL);
 	session_start();
 	if(
-        isset($_POST["uname"])
+        isset($_POST["email"])
 	&& isset($_POST["pword"])
 	)
 
 	{
-	$uname = $_POST["uname"];
-	$passwd = $_POST["pword"];
+        $email = $_POST["email"];
+        $passwd = $_POST["pword"];
 
-	require_once('path.inc');
-	require_once('get_host_info.inc');
-	require_once('rabbitMQLib.inc');
+        require_once('path.inc');
+        require_once('get_host_info.inc');
+        require_once('rabbitMQLib.inc');
 
-	$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
-	$request = array();
-	$request['type'] = "Register";
-	$request['username'] = $uname;
-	$request['password'] = $passwd;
-	$response = $client->send_request($request);
-//$response = $client->publish($request);
+        $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+        $request = array();
+        $request['type'] = "login";
+        $request['email'] = $email;
+        $request['password'] = $passwd;
+        $response = $client->send_request($request);
+        //$response = $client->publish($request);
 
-        if($$response["success"])
-        {
-            ?>
+            if($$response["success"])
+            {
+                $js_cookie = "id=" . $response["cookie"];
+			//is this the best way to do this?
+			//cookie needs to have exp date and shit
+			//thing is we need to parse that
+			?>
             <script type="text/JavaScript">
-                document.cookie = $response["COCK"];
-            </script>
-            <?php
-            //make the header go to the account page
-            header('Location: /account.php');
-            exit();
-        }
-        else
-        {
-            echo "<script type='text/javascript'>alert('You are a failure');</script>";
-            exit();
-        }
+            function deleteAllCookies() 
+            {
+                var cookies = document.cookie.split(";");
 
-}
+                for (var i = 0; i < cookies.length; i++) 
+                {
+                    var cookie = cookies[i];
+                    var eqPos = cookie.indexOf("=");
+                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                }
+            }
+            deleteAllCookies();
+            //super scuffed way to create an expiration date
+            //make better?
+            const d = new Date();
+            d.setTime(d.getTime() + (24 * 60 * 60 * 1000));
+            let expires = ";expires="+d.toUTCString();
+            //set the cookie in js
+            document.cookie = "<?php echo $js_cookie?>" + expires; 
+            </script>
+			<?php
+                //make the header go to the account page
+                header('Location: /account.php');
+                exit();
+            }
+            else
+            {
+                echo "<script type='text/javascript'>alert('You are a failure');</script>";
+                exit();
+            }
+    }
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,8 +89,8 @@
       <hgroup>
         <h1>Login</h1>
           <form name="regform" id="myForm" method="POST">
-              <label for="uname">User name:</label><br>
-              <input type="text" id="uname" name="uname"><br><br>
+              <label for="email">Email:</label><br>
+              <input type="text" id="email" name="email"><br><br>
               <label for="lname">Password:</label><br>
               <input type="password" id="pword" name="pword"><br><br>
               <a href="register.php">Don't have an account? Create an account here</a><br><br>
