@@ -9,7 +9,7 @@
 	)
 
 	{
-        $uname = $_POST["uname"];
+        $email = $_POST["email"];
         $passwd = $_POST["pword"];
 
         require_once('path.inc');
@@ -19,7 +19,7 @@
         $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
         $request = array();
         $request['type'] = "login";
-        $request['username'] = $uname;
+        $request['email'] = $email;
         $request['password'] = $passwd;
         $response = $client->send_request($request);
         //$response = $client->publish($request);
@@ -89,8 +89,8 @@
       <hgroup>
         <h1>Login</h1>
           <form name="regform" id="myForm" method="POST">
-              <label for="uname">User name:</label><br>
-              <input type="text" id="uname" name="uname"><br><br>
+              <label for="email">Email:</label><br>
+              <input type="text" id="email" name="email"><br><br>
               <label for="lname">Password:</label><br>
               <input type="password" id="pword" name="pword"><br><br>
               <a href="register.php">Don't have an account? Create an account here</a><br><br>

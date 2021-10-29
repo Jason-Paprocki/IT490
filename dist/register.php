@@ -1,7 +1,7 @@
 <?php
-	require_once('path.inc');
-	require_once('get_host_info.inc');
-	require_once('rabbitMQLib.inc');
+	require_once('rabbit/path.inc');
+	require_once('rabbit/get_host_info.inc');
+	require_once('rabbit/rabbitMQLib.inc');
 	session_start();
 	if(	   
 		isset($_POST["fname"])
