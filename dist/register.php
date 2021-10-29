@@ -50,7 +50,7 @@
 				var date = new Date();
 				date.setTime(date.getTime() + (1*60*60*1000));
 				document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
-				
+
 				</script>
 			<?php
 			//make the header go to the account page
