@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 
-
 require_once('rabbit/path.inc');
 require_once('rabbit/get_host_info.inc');
 require_once('rabbit/rabbitMQLib.inc');
@@ -183,7 +182,37 @@ function validate($cookie){
 		exit("send error\n");
 	}
 }
-
+function load_posts()
+{
+	$response = array();
+	try
+	{
+		$stmt = "SELECT fname, lname, date, message from `Forum` where distinct post_id and message_id = 1";
+		$params = array();
+		$result = send_sql_query_to_databse(false,$stmt,$params);
+		if(!empty($result))
+		{
+			$response["success"] = true;
+			$response["posts"] = $result;
+			return $response;
+		}
+		else
+		{
+			$response["success"] = false;
+			$response["posts"] = "No Posts";
+			return $response;
+		}
+	}
+	catch(Exception $e){
+		//echo the error out to stdout
+		echo $e->getMessage();
+		//send the error
+		send_error(strval($e->getMessage()));
+		$response["success"] = false;
+		return $response;
+		exit("send error\n");
+	}
+}
 function request_processor($req){
 	echo var_dump($req);
 	try{

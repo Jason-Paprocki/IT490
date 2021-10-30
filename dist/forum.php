@@ -1,13 +1,76 @@
 <?php
 
-//check if id cookie is set
-if(!isset($_COOKIE['id'])){
-  header("/login.php");
-  exit();
-}
+  //check if id cookie is set
+  if(!isset($_COOKIE['id'])){
+    header("/login.php");
+    exit();
+  }
+  //get id cookie
+  $id = $_COOKIE['id'];
 
+  $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+  $request = array();
+  $request['type'] = "validate_session";
+  $request['password'] = $id;
 
+  $response = $client->send_request($request);
+  if(!$response["success"])
+  {
+			//echo javascript alert containing invalid login session
+			?>
+			<script type="text/javascript">
+				//alert with response message
+				alert("Your session has expired");
+				window.location.href = "/login.php";
+			</script>
+			<?php
+      exit();
+  }
 
+  $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+  $request = array();
+  $request['type'] = "load_posts";
+  $response = $client->send_request($request);
+  if ($response["posts"] == "No Posts")
+  {
+    //html display for no posts
+    ?>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h1>No Posts</h1>
+        </div>
+      </div>
+    </div>
+    <?php
+  }
+  else
+  {
+    //html display for posts
+    ?>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h1>Posts</h1>
+        </div>
+      </div>
+    </div>
+    <?php
+    foreach ($response["posts"] as $post)
+    {
+      //html display for each post
+      ?>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h2><?php echo $post["title"]; ?></h2>
+            <p><?php echo $post["content"]; ?></p>
+          </div>
+        </div>
+      </div>
+      <?php
+    }
+  }
 ?>
 
 
