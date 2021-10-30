@@ -46,16 +46,13 @@
 			//cookie needs to have exp date and shit
 			//thing is we need to parse that
 			?>
-				<script type="text/JavaScript">
-				//delete previous cookie
-				document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-				//set cookie
-				//generate date 1 hour in the future
-				var date = new Date();
-				date.setTime(date.getTime() + (1*60*60*1000));
-				document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
-
-				</script>
+            <script type="text/JavaScript">
+                //set cookie
+                //generate date 1 hour in the future
+                var date = new Date();
+                date.setTime(date.getTime() + (1*60*60*1000));
+                document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString() + ";path=/";
+            </script>
 			<?php
 			//make the header go to the account page
 			header('Location: /account.php');

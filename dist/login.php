@@ -2,38 +2,34 @@
     ini_set('display_errors',1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
-    require_once('rabbit/path.inc');
-    require_once('rabbit/get_host_info.inc');
-    require_once('rabbit/rabbitMQLib.inc');
-	if(isset($_POST["email"])
-	&& isset($_POST["pword"])
+	require_once('rabbit/path.inc');
+	require_once('rabbit/get_host_info.inc');
+	require_once('rabbit/rabbitMQLib.inc');
+	if(isset($_POST['email'])
+	&& isset($_POST['pword'])
 	)
 	{
         $email = $_POST["email"];
         $passwd = $_POST["pword"];
-
-        echo "??Sfdsagdr";
 		//send the frontend shit over to the backend
 		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
         $request = array();
         $request['type'] = "login";
         $request['email'] = $email;
         $request['password'] = $passwd;
-        echo var_dump($request);
         $response = $client->send_request($request);
-        echo var_dump($response);
-        if($$response["success"])
+        echo var_dump($response["success"]);
+        if($response["success"])
         {
             $js_cookie = "id=" . $response["cookie"];
+            echo var_dump($js_cookie);
         ?>
             <script type="text/JavaScript">
-                //delete previous cookie
-                document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
                 //set cookie
                 //generate date 1 hour in the future
                 var date = new Date();
                 date.setTime(date.getTime() + (1*60*60*1000));
-                document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
+                document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString() + ";path=/";
             </script>
         <?php
             //make the header go to the account page
@@ -42,8 +38,12 @@
         }
         else
         {
-            echo "<script type='text/javascript'>alert('Unknown');</script>";
-            exit();
+            ?>
+                <script type="text/javascript">
+                alert("<?php echo $response["msg"]; ?>");
+                window.location.href = "login.php";
+                </script>
+            <?php
         }
     }
 ?>
