@@ -61,22 +61,25 @@ function register($email,$pass,$fname,$lname)
         $params = array(":email" => $email);
 		//send to database
         $result = send_sql_query_to_databse(true,$stmt,$params);
-        //if result is false, the email is not in use
+        
+		//if result is false, the email is not in use
 		if($result != false)
 		{
 			$response['error'] = "Email already in use";
 			$response['success'] = false;
 			return $response;
 		}
+
 		//this is a 13 character shitter; alphanumeric
 		$response["cookie"] = uniqid();
-		//need to hash with salt so idk
+		
+		//create some cool id
 		$id = md5(uniqid(rand(), true));
-		//hashing password
-		$pass = password_hash($pass, PASSWORD_BCRYPT);
-		//NOT FINISHED
-		//CREATE PROPER SQL STATEMENT
-		//REFRENCE INIT_DB.PHP
+		
+		//hash the password using sha256
+		$pass = hash("sha256",$pass);
+
+		//prepare database variables
 		$stmt = "INSERT INTO `Users`
 					(id, email, cookie, password, fname, lname) VALUES
 					(:id, :email, :cookie, :password, :fname, :lname)";
@@ -90,6 +93,7 @@ function register($email,$pass,$fname,$lname)
 		send_sql_query_to_databse(true,$stmt,$params);
 		//make the response true and send to frontend
 		$response["success"] = true;
+		//return the response to the server
 		return $response;
 		
     }
@@ -103,61 +107,86 @@ function register($email,$pass,$fname,$lname)
 		return $response;
 		exit("send error\n");
 	}
-		
-    
 }
 
 
-function login($user,$pass){
+function login($email,$pass){
 	$response = array();
 	try
 	{
-		$db = new PDO($connection_string, $dbuser, $dbpass);
-		$stmt = $db->prepare("SELECT email, password from `Users` where email = :email LIMIT 1");
+		$stmt = "SELECT email, password from `Users` where email = :email LIMIT 1";
 		$params = array(":email"=> $email);
-		$stmt->execute($params);
-		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-		if($result)
+		$result = send_sql_query_to_databse(true,$stmt,$params);
+		if($result != false)
 		{
-			$userpassword = $result['password'];
+			//grab the user's password
+			$userpassword = $result[0]['password'];
+			//verifies the hashed password with the one that the user provides
 			if(password_verify($pass, $userpassword))
 			{
 				//give the user a cookie
-				//this is a 13 character shitter; alphanumeric
-				//TODO
-				//needs to update the cookie in the sql table
 				$response["cookie"] = uniqid();
-				return True;
-				
+				//update the cookie in the database
+				$stmt = "UPDATE `Users` SET cookie = :cookie WHERE email = :email";
+				$params = array(":cookie"=> $response["cookie"],
+								":email"=> $email);
+				send_sql_query_to_databse(true,$stmt,$params);
+				//make the response true and send to frontend
+				$response["success"] = true;
+				return $response;
 			}
 		}
 		else
 		{
-			return false;
+			$response["success"] = false;
+			$response["msg"] = "Invalid Username or Password";
+			return $response;
 		}
 	}
 	catch(Exception $e){
+		//echo the error out to stdout
 		echo $e->getMessage();
-		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
-		$request = array();
-		$request['type'] = "Error";
-		$request['message'] = strval($e->getMessage());
-		//$response = $client->send_request($request);
-		$response = $client->publish($request);
-	
-		echo "sent error".PHP_EOL;
-		exit("It didn't work");
+		//send the error
+		send_error(strval($e->getMessage()));
+		$response["success"] = false;
+		return $response;
+		exit("send error\n");
 	}
 }
 
+function validate($cookie){
+	$response = array();
+	try
+	{
+		$stmt = "SELECT cookie from `Users` where cookie = :cookie LIMIT 1";
+		$params = array(":cookie"=> $cookie);
+		$result = send_sql_query_to_databse(true,$stmt,$params);
+		if(!empty($result))
+		{
+			$response["success"] = true;
+			return $response;
+		}
+		else
+		{
+			$response["success"] = false;
+			$response["msg"] = "Invalid Cookie";
+			return $response;
+		}
+	}
+	catch(Exception $e){
+		//echo the error out to stdout
+		echo $e->getMessage();
+		//send the error
+		send_error(strval($e->getMessage()));
+		$response["success"] = false;
+		return $response;
+		exit("send error\n");
+	}
+}
 
 function request_processor($req){
-	echo "Received Request".PHP_EOL;
 	echo var_dump($req);
-	if(!isset($req['type'])){
-		//gotta send this dog ass error out
-		return "Error: unsupported message type";
-	}
+	try{
 	//Handle message type
 	$type = $req['type'];
 	switch($type){
@@ -167,9 +196,15 @@ function request_processor($req){
             return register($req['email'], $req['password'],$req['fname'],$req['lname']);
         case "validate_session":
 			return validate($req['session_id']);
+		}
 	}
-	return array("return_code" => '0',
-		"message" => "Server received request and processed it");
+	catch(Exception $e){
+		//echo the error out to stdout
+		echo $e->getMessage();
+		//send the error
+		send_error(strval($e->getMessage()));
+		exit("send error\n");
+	}
 }
 
 $server = new rabbitMQServer("testRabbitMQ.ini", "frontbackcomms");

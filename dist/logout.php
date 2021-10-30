@@ -1,5 +1,8 @@
+<script type="text/JavaScript">
+    //delete previous cookie
+    document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+</script>
 <?php
-//just need to unset cookie here and refresh the page
-//or maybe redirect to login page
-
+//redirect the user to the login page
+    header('Location: /login.php');
 ?>

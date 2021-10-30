@@ -1,181 +1,118 @@
-#!/usr/bin/php
 <?php
-
-
-require_once('rabbit/path.inc');
-require_once('rabbit/get_host_info.inc');
-require_once('rabbit/rabbitMQLib.inc');
-
-//send error with rabbit
-function send_error($error){
-	$client = new rabbitMQClient("errorReporting.ini","errorReporting");
-	$request = array();
-	$request['type'] = "Error";
-	$request['message'] = $error;
-	$response = $client->publish($request);
-	exit("sent error");
-}
-
-function send_sql_query_to_databse($has_params,$query,$query_args){
-	try{
-		require("config.php");
-		$connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
-		$db = new PDO($connection_string, $dbuser, $dbpass);
-		if($has_params)
-		{
-			$stmt = $db->prepare($query);
-			$stmt->execute($query_args);
-		}
-		else
-		{
-			$stmt = $db->prepare($query);
-			$stmt->execute();
-		}
-		$result = $stmt->fetchAll();
-		//if result is empty, return false
-		if(empty($result))
-		{
-			return false;
-		}
-		else
-		{
-			return $result;
-		}
-	}
-	catch(Exception $e){
-		//echo the error out to stdout
-		echo $e->getMessage();
-		//send the error
-		send_error(strval($e->getMessage()));
-		exit("send error\n");
-	}	
-}
-
-function register($email,$pass,$fname,$lname)
-{
-	//check if the email is in use already
-	$response = array();
-    try
-    {   //prepare database variables
-        $stmt = "SELECT email from `Users` where email = :email";
-        $params = array(":email" => $email);
-		//send to database
-        $result = send_sql_query_to_databse(true,$stmt,$params);
-        //if result is false, the email is not in use
-		if($result != false)
-		{
-			$response['msg'] = "Email already in use";
-			$response['success'] = false;
-			return $response;
-		}
-		//this is a 13 character shitter; alphanumeric
-		$response["cookie"] = uniqid();
-		//need to hash with salt so idk
-		$id = md5(uniqid(rand(), true));
-		//hashing password
-		$pass = password_hash($pass, PASSWORD_BCRYPT);
-		//NOT FINISHED
-		//CREATE PROPER SQL STATEMENT
-		//REFRENCE INIT_DB.PHP
-		$stmt = "INSERT INTO `Users`
-					(id, email, cookie, password, fname, lname) VALUES
-					(:id, :email, :cookie, :password, :fname, :lname)";
-		$params = array(":id" => $id,
-						":email"=> $email, 
-						":cookie"=> $response["cookie"],
-						":password"=> $pass,
-						":fname"=> $fname,
-						":lname"=> $lname);
-		//send to database
-		send_sql_query_to_databse(true,$stmt,$params);
-		//make the response true and send to frontend
-		$response["success"] = true;
-		return $response;
-		
-    }
-    catch(Exception $e)
-    {
-		//echo the error out to stdout
-		echo $e->getMessage();
-		//send the error
-		send_error(strval($e->getMessage()));
-		$response["success"] = false;
-		return $response;
-		exit("send error\n");
-	}
-		
-    
-}
-
-
-function login($user,$pass){
-	$response = array();
-	try
+	require_once('rabbit/path.inc');
+	require_once('rabbit/get_host_info.inc');
+	require_once('rabbit/rabbitMQLib.inc');
+	if(isset($_POST['fname'])
+	&& isset($_POST['lname'])
+	&& isset($_POST['email'])
+	&& isset($_POST['pword'])
+	&& isset($_POST['conf_pword'])
+	)
 	{
-		$db = new PDO($connection_string, $dbuser, $dbpass);
-		$stmt = $db->prepare("SELECT email, password from `Users` where email = :email LIMIT 1");
-		$params = array(":email"=> $email);
-		$stmt->execute($params);
-		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-		if($result)
+		$fname = $_POST["fname"];
+		$lname = $_POST["lname"];
+		$email = $_POST["email"];
+		$passwd = $_POST["pword"];
+		$conf_pword = $_POST["conf_pword"];
+
+		//confirm that regular password is the same as the confirmation password
+		if($passwd != $conf_pword)
 		{
-			$userpassword = $result['password'];
-			if(password_verify($pass, $userpassword))
-			{
-				//give the user a cookie
-				//this is a 13 character shitter; alphanumeric
-				//TODO
-				//needs to update the cookie in the sql table
-				$response["cookie"] = uniqid();
-				return True;
-				
-			}
+			//echo javascript alert containing php response message
+			?>
+			<script type="text/javascript">
+				//alert with response message
+				alert("Passwords do not match");
+				window.location.href = "register.php";
+			</script>
+			<?php
+		}
+
+		//send the frontend shit over to the backend
+		$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+		$request = array();
+		$request['type'] = "register";
+		$request['email'] = $email;
+		$request['password'] = $passwd;
+		$request['lname'] = $lname;
+		$request['fname'] = $fname;
+		$response = $client->send_request($request);
+
+		//verify that the response is a success from the backend
+		if($response["success"])
+		{
+			$js_cookie = "id=" . $response["cookie"];
+			//is this the best way to do this?
+			//cookie needs to have exp date and shit
+			//thing is we need to parse that
+			?>
+				<script type="text/JavaScript">
+				//delete previous cookie
+				document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+				//set cookie
+				//generate date 1 hour in the future
+				var date = new Date();
+				date.setTime(date.getTime() + (1*60*60*1000));
+				document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
+
+				</script>
+			<?php
+			//make the header go to the account page
+			header('Location: /account.php');
+			//check in account if there is a redirect and be like "hello user name or whatever"
+			exit();
 		}
 		else
 		{
-			return false;
+			//echo javascript alert containing php response message
+			?>
+			<script type="text/javascript">
+				//alert with response message
+				alert("<?php echo $response["msg"]; ?>");
+				window.location.href = "register.php";
+			</script>
+			<?php
 		}
 	}
-	catch(Exception $e){
-		echo $e->getMessage();
-		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
-		$request = array();
-		$request['type'] = "Error";
-		$request['message'] = strval($e->getMessage());
-		//$response = $client->send_request($request);
-		$response = $client->publish($request);
-	
-		echo "sent error".PHP_EOL;
-		exit("It didn't work");
-	}
-}
-
-
-function request_processor($req){
-	echo "Received Request".PHP_EOL;
-	echo var_dump($req);
-	if(!isset($req['type'])){
-		//gotta send this dog ass error out
-		return "Error: unsupported message type";
-	}
-	//Handle message type
-	$type = $req['type'];
-	switch($type){
-		case "login":
-			return login($req['email'], $req['password']);
-        case "register":
-            return register($req['email'], $req['password'],$req['fname'],$req['lname']);
-        case "validate_session":
-			return validate($req['session_id']);
-	}
-	return array("return_code" => '0',
-		"message" => "Server received request and processed it");
-}
-
-$server = new rabbitMQServer("testRabbitMQ.ini", "frontbackcomms");
-
-echo "Rabbit MQ Server Start" . PHP_EOL;
-$server->process_requests('request_processor');
-echo "Rabbit MQ Server Stop" . PHP_EOL;
-exit();
 ?>
+
+<html>
+<head>
+	<title>Sign Up</title>
+	<link rel="stylesheet" href="./style.css">
+	<link rel="icon" href="https://cloudfront-us-east-1.images.arcpublishing.com/coindesk/XA6KIXE6FBFM5EWSA25JI5YAU4.jpg"/>
+</head>
+<body>
+
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+    <div class="navbar">
+      <ul class="navbar-container">
+        <li><a href="index.html" class="left-underline nav-button brand-logo">Pet Adoption Service</a></li>
+		<li class="nav-item active"><a href="login.html" class="left-underline nav-button" data-scroll>Account</a></li>
+        <li class="nav-item"><a href="#section-3" class="left-underline nav-button" data-scroll>Wallet</a></li>
+        <li class="nav-item"><a href="#section-2" class="left-underline nav-button" data-scroll>Services</a></li>
+		<li class="nav-item active"><a href="forum.html" class="left-underline nav-button" data-scroll>Forums</a></li>
+      </ul>
+    </div>
+
+<div class="parallax p1" id="section-1">
+      <hgroup>
+        <h1>Register</h1>
+		<form name="regform" id="myForm" method="POST">
+		  <label for="fname">First Name:</label><br>
+		  <input type="text" id="fname" name="fname"><br><br>
+		  <label for="lname">Last Name:</label><br>
+		  <input type="text" id="lname" name="lname"><br><br>
+		  <label for="email">Email:</label><br>
+		  <input type="text" id="email" name="email"><br><br>
+		  <label for="pword">Password:</label><br>
+		  <input type="password" id="pword" name="pword"><br><br>
+		  <label for="conf_pword">Confirm Password:</label><br>
+		  <input type="password" id="conf_pword" name="conf_pword"><br><br>
+		  <input type="submit" value="Create Account"><br>
+		</form>
+      </hgroup>
+    </div>
+
+</body>
+</html>
