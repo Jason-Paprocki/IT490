@@ -23,7 +23,7 @@
 			<script type="text/javascript">
 				//alert with response message
 				alert("Passwords do not match");
-				window.location.href = "register.php";
+				window.location.href = "/register.php";
 			</script>
 			<?php
 		}
@@ -52,10 +52,9 @@
                 var date = new Date();
                 date.setTime(date.getTime() + (1*60*60*1000));
                 document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString() + ";path=/";
+				window.location.replace("/account.php");
             </script>
 			<?php
-			//make the header go to the account page
-			header('Location: /account.php');
 			//check in account if there is a redirect and be like "hello user name or whatever"
 			exit();
 		}
@@ -66,7 +65,7 @@
 			<script type="text/javascript">
 				//alert with response message
 				alert("<?php echo $response["msg"]; ?>");
-				window.location.href = "register.php";
+				window.location.href = "/register.php";
 			</script>
 			<?php
 		}

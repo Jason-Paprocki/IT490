@@ -22,18 +22,17 @@
         if($response["success"])
         {
             $js_cookie = "id=" . $response["cookie"];
-            echo var_dump($js_cookie);
         ?>
             <script type="text/JavaScript">
                 //set cookie
                 //generate date 1 hour in the future
                 var date = new Date();
                 date.setTime(date.getTime() + (1*60*60*1000));
-                document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString() + ";path=/";
+                //set cookie with path to root
+                document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString() + "; path=/";
+                window.location.replace("/account.php");
             </script>
         <?php
-            //make the header go to the account page
-            header('Location: /account.php');
             exit();
         }
         else
