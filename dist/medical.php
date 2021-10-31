@@ -1,5 +1,9 @@
 <?php
 //check if cookie is set
+if(!isset($_COOKIE['id'])){
+    header("/login.php");
+    exit();
+}
 
 //prob going to need a table for medical info
 try{
