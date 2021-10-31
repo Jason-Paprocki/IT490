@@ -62,6 +62,7 @@ catch(Exception $e){
 //will need to be able to edit this data -- edit button or something?
 //how can we create push notifications? -- send to email or just javascript at login?
 
+//need to create medical.html for vet search page - Joshua
 ?>
 
 
@@ -69,4 +70,30 @@ catch(Exception $e){
 
 <!DOCTYPE html>
 <html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Homepage</title>
+  <link rel="icon" href="https://cloudfront-us-east-1.images.arcpublishing.com/coindesk/XA6KIXE6FBFM5EWSA25JI5YAU4.jpg"/>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<html>
+  <head>
+    <title>Parallax Template - uplusion23</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-smooth-scroll/1.5.5/jquery.smooth-scroll.min.js"></script>
+  </head>
+  <body>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+    <div class="navbar">
+      <ul class="navbar-container">
+        <li><a href="index.html" class="left-underline nav-button brand-logo">Pet Adoption Service</a></li>
+	<li class="nav-item active"><a href="login.html" class="left-underline nav-button" data-scroll>Account</a></li>
+        <li class="nav-item"><a href="#section-3" class="left-underline nav-button" data-scroll>Wallet</a></li>
+        <li class="nav-item"><a href="#section-2" class="left-underline nav-button" data-scroll>Services</a></li>
+	<li class="nav-item active"><a href="forum.html" class="left-underline nav-button" data-scroll>Forums</a></li>
+	<li class="nav-item active"><a href="medical.html" class="left-underline nav-button" data-scroll>Medical Info</a></li>
+	      </body>
 </html>
