@@ -2,23 +2,10 @@
 //check if cookie is set
 
 //prob going to need a table for medical info
-
-    //display
-//name of customer
-//name of pet
-//type of pet
-// vaccines
-//gromming
-//vet checkup times
-//vet name
-//vet phone
-//vet address
-
-//will pull this data by checking the id and matching it to the id set in the Users table
 try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
-	echo "Created to create Users table\n";
-	$stmt = $db->prepare("create table if not exists `Users` (
+	echo "Created to create Medical Info table\n";
+	$stmt = $db->prepare("create table if not exists `Medical` (
 				`id` int auto_increment not null,
 				`email` varchar(100) not null unique,
                 `password` varchar(100) not null,
@@ -42,6 +29,19 @@ catch(Exception $e){
     echo "sent error".PHP_EOL;
 	exit("It didn't work");
 }
+
+    //display
+//name of customer
+//name of pet
+//type of pet
+// vaccines
+//gromming
+//vet checkup times
+//vet name
+//vet phone
+//vet address
+
+//will pull this data by checking the id and matching it to the id set in the Users table
 //will need to be able to edit this data
 
 //picture of the animal?
