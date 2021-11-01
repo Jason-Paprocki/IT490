@@ -1,4 +1,6 @@
 <?php
+//sudo apt-get install php*-mysql
+//sudo service apache2 restart
 $path = '/usr/local/lib/system_libs';
     if (file_exists('local.ini'))
     {
