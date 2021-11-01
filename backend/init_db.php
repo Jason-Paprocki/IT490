@@ -21,41 +21,17 @@ $connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
 //CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
 
 try{
+    //create pet services database
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Connected to create database\n";
 	$stmt = $db->prepare("CREATE DATABASE IF NOT EXISTS Pet_Service");
-	$stmt->execute();
-	echo var_export($stmt->errorInfo(), true);
-}
-catch(Exception $e){
-    //echo the error out to stdout
-    echo $e->getMessage();
-    //send the error
-    send_error(strval($e->getMessage()));
-    exit("send error\n");
-}
-
-//CREATE THE USERS TABLE
-try{
-	$db = new PDO($connection_string, $dbuser, $dbpass);
+	$stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
+    //create users table
 	echo "Created to create Users table\n";
 	$stmt = $db->prepare(file_get_contents("sql_files/users.sql"));
-	$stmt->execute();
-	echo var_export($stmt->errorInfo(), true);
-}
-//sends error message to every machine
-catch(Exception $e){
-    //echo the error out to stdout
-    echo $e->getMessage();
-    //send the error
-    send_error(strval($e->getMessage()));
-    exit("send error\n");
-}
-//PROB GUNNA NEED A PAYMENT DATABASE, ANIMAL DATABASE, 
-//CREATE THE FORUM TABLE
-try{
-	$db = new PDO($connection_string, $dbuser, $dbpass);
-	echo "Created to create Forum table\n";
+	$stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
+    //create forum table
+    echo "Created to create Forum table\n";
 	$stmt = $db->prepare("create table if not exists `Forum` (
                 `fname` varchar(20) not null,
                 `lname` varchar(20) not null,
@@ -66,36 +42,8 @@ try{
 				PRIMARY KEY (`post_id`)
 				) CHARACTER SET utf8 COLLATE utf8_general_ci"
 			);
-	$stmt->execute();
-	echo var_export($stmt->errorInfo(), true);
+    $stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
 }
-//sends error message to every machine
-catch(Exception $e){
-    //echo the error out to stdout
-    echo $e->getMessage();
-    //send the error
-    send_error(strval($e->getMessage()));
-    exit("send error\n");
-}
-try{
-	$db = new PDO($connection_string, $dbuser, $dbpass);
-	echo "Created to create UserInfo table\n";
-	$stmt = $db->prepare("create table if not exists `UserInfo` (
-                `id` varchar(32) not null,
-                `animal_type` varchar(10),
-                `animal_name` varchar(20),
-                `animal_age` varchar(10),
-                `animal_breed` varchar(50),
-                `animal_image` varchar(100),
-                `animal_description` varchar(1000),
-                `zipcode` varchar(10),
-				PRIMARY KEY (`id`)
-				) CHARACTER SET utf8 COLLATE utf8_general_ci"
-			);
-	$stmt->execute();
-	echo var_export($stmt->errorInfo(), true);
-}
-//sends error message to every machine
 catch(Exception $e){
     //echo the error out to stdout
     echo $e->getMessage();

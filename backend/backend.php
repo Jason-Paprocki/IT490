@@ -25,12 +25,12 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 		{
 			
 			$stmt = $db->prepare($query);
-			$stmt->execute($query_args) or die(print_r($stmt->errorInfo(), true));
+			$stmt->execute($query_args) or throw new Exception(print_r($stmt->errorInfo(), true));
 		}
 		else
 		{
 			$stmt = $db->prepare($query);
-			$stmt->execute();
+			$stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
 		}
 		$result = $stmt->fetchAll();
 		//if result is empty, return false
