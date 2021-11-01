@@ -1,3 +1,10 @@
 # IT490
+# Team Doge
+## Group Members
+- Jason Paprocki
+- Joshua Jen
+- Simon Song
+- Chinonso Chima-Anyanka
+- Lakhvir Ganger
 
-made some small chjanges
+# Project - Pet Adoption Service
