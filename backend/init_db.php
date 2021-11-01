@@ -39,16 +39,7 @@ catch(Exception $e){
 try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Created to create Users table\n";
-	$stmt = $db->prepare("create table if not exists `Users` (
-				`id` varchar(32) not null,
-				`email` varchar(100) not null unique,
-                `cookie` varchar(13),
-                `password` varchar(100) not null,
-                `fname` varchar(20) not null,
-                `lname` varchar(20) not null,
-				PRIMARY KEY (`id`)
-				) CHARACTER SET utf8 COLLATE utf8_general_ci"
-			);
+	$stmt = $db->prepare(file_get_contents("sql_files/users.sql"));
 	$stmt->execute();
 	echo var_export($stmt->errorInfo(), true);
 }
