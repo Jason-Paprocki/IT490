@@ -17,11 +17,11 @@ function send_error($error){
 	exit("sent error");
 }
 
-$connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
-//CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
+
 
 try{
-    //create pet services database
+    $connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
+    //CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Connected to create database\n";
 	$stmt = $db->prepare("CREATE DATABASE IF NOT EXISTS Pet_Service");
