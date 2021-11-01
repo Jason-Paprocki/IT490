@@ -59,7 +59,8 @@ if(
         echo $response["msg"];
         exit();
     }
-
+echo "<h3>Welcome, " . $fname . " " . $lname . "</h3><br>";
+echo "Email is: " . $email;
 }
 ?>
 
@@ -82,11 +83,6 @@ if(
     </ul>
 </div>
 
-<h3>Name: </h3><br><br>
-
-<p>Email: </p><br><br>
-
-<p></p>
 
 <form action="logout.php">
     <input type="submit" value="Log Out">
