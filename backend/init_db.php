@@ -83,4 +83,5 @@ catch(Exception $e){
     //send the error
     send_error(strval($e->getMessage()));
     exit("send error\n");
+}
 ?>
