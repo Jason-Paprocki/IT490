@@ -25,7 +25,10 @@ session_start();
     </ul>
 </div>
 
+<h3>Name: </h3><br><br>
+<p>Email: </p><br><br>
 
+<p></p>
 
 <form action="logout.php">
     <input type="submit" value="Log Out">
