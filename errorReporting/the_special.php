@@ -13,7 +13,7 @@
 		echo $e->getMessage();
 		echo "\n";
 		
-		$client = new rabbitMQClient("testRabbitMQ.ini","testServer");
+		$client = new rabbitMQClient("testRabbitMQ.ini","errorReporting");
 		$request = array();
 		$request['machine'] = "broker";
 		$msg = strval($e->getMessage());
