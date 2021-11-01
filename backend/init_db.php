@@ -5,6 +5,16 @@ require_once('rabbit/path.inc');
 require_once('rabbit/get_host_info.inc');
 require_once('rabbit/rabbitMQLib.inc');
 
+//send error with rabbit
+function send_error($error){
+	$client = new rabbitMQClient("errorReporting.ini","errorReporting");
+	$request = array();
+	$request['type'] = "Error";
+	$request['message'] = $error;
+	$response = $client->publish($request);
+	exit("sent error");
+}
+
 $connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
 //CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
 try{
@@ -15,16 +25,11 @@ try{
 	echo var_export($stmt->errorInfo(), true);
 }
 catch(Exception $e){
+    //echo the error out to stdout
     echo $e->getMessage();
-    $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
-    $request = array();
-    $request['type'] = "Error";
-    $request['message'] = $e;
-    //$response = $client->send_request($request);
-    $response = $client->publish($request);
-
-    echo "sent error".PHP_EOL;
-	exit("It didn't work");
+    //send the error
+    send_error(strval($e->getMessage()));
+    exit("send error\n");
 }
 
 //CREATE THE USERS TABLE
@@ -46,16 +51,11 @@ try{
 }
 //sends error message to every machine
 catch(Exception $e){
+    //echo the error out to stdout
     echo $e->getMessage();
-    $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
-    $request = array();
-    $request['type'] = "Error";
-    $request['message'] = $e;
-    //$response = $client->send_request($request);
-    $response = $client->publish($request);
-
-    echo "sent error".PHP_EOL;
-	exit("It didn't work");
+    //send the error
+    send_error(strval($e->getMessage()));
+    exit("send error\n");
 }
 //PROB GUNNA NEED A PAYMENT DATABASE, ANIMAL DATABASE, 
 //CREATE THE USERS TABLE
@@ -78,15 +78,9 @@ try{
 }
 //sends error message to every machine
 catch(Exception $e){
+    //echo the error out to stdout
     echo $e->getMessage();
-    $client = new rabbitMQClient("testRabbitMQ.ini","testServer");
-    $request = array();
-    $request['type'] = "Error";
-    $request['message'] = $e;
-    //$response = $client->send_request($request);
-    $response = $client->publish($request);
-
-    echo "sent error".PHP_EOL;
-	exit("It didn't work");
-}
+    //send the error
+    send_error(strval($e->getMessage()));
+    exit("send error\n");
 ?>
