@@ -1,9 +1,66 @@
 <?php
-ini_set('display_errors',1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once('rabbit/path.inc');
+require_once('rabbit/get_host_info.inc');
+require_once('rabbit/rabbitMQLib.inc');
 session_start();
+if(
+    isset($_POST["fname"])
+    && isset($_POST["lname"])
+    && isset($_POST["email"])
+    && isset($_POST["pword"])
 
+)
+{
+    $fname = $_POST["fname"];
+    $lname = $_POST["lname"];
+    $email = $_POST["email"];
+    $passwd = $_POST["pword"];
+
+
+
+    //there are some dog ass files that need to be sent in order to make this work
+    $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+    $request = array();
+    $request['type'] = "register";
+    $request['email'] = $email;
+    $request['password'] = $passwd;
+    $request['lname'] = $lname;
+    $request['fname'] = $fname;
+    $response = $client->send_request($request);
+    //$response = $client->publish($request);
+
+    if($response["success"])
+    {
+        $js_cookie = "id=" . $response["cookie"];
+        //is this the best way to do this?
+        //cookie needs to have exp date and shit
+        //thing is we need to parse that
+        ?>
+        <script type="text/JavaScript">
+            //delete cookie
+            document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+            //set cookie
+            //generate date 1 hour in the future
+            var date = new Date();
+            date.setTime(date.getTime() + (1*60*60*1000));
+            document.cookie = "<?php echo $js_cookie; ?>; expires=" + date.toGMTString();
+
+        </script>
+        <?php
+        //make the header go to the account page
+        header('Location: /account.php');
+        //check in account if there is a redirect and be like "hello user name or whatever"
+        exit();
+    }
+    else
+    {
+        //tbh idk what this is
+        //prob need to check up on this
+        echo $response["msg"];
+        exit();
+    }
+
+}
 ?>
 
 <html>
@@ -26,6 +83,7 @@ session_start();
 </div>
 
 <h3>Name: </h3><br><br>
+
 <p>Email: </p><br><br>
 
 <p></p>
