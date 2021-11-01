@@ -1,7 +1,5 @@
 #!/usr/bin/php
 <?php
-//`sudo apt-get install php*-mysql` 
-//sudo service apache2 restart
 require("config.php");
 require_once('rabbit/path.inc');
 require_once('rabbit/get_host_info.inc');
