@@ -1,18 +1,15 @@
 <?php
 
-//check if id cookie is set
-if(!isset($_COOKIE['id'])){
-  header("/login.php");
-  exit();
-}
+  require_once('rabbit/path.inc');
+  require_once('rabbit/get_host_info.inc');
+  require_once('rabbit/rabbitMQLib.inc');
 
-
-
+  //check if id cookie is set
+  if(!isset($_COOKIE['id'])){
+    header("/login.php");
+    exit();
+  }
 ?>
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -42,94 +39,147 @@ if(!isset($_COOKIE['id'])){
 		
       </ul>
     </div>
-    <div class="parallax p1" id="section-1">
-      <hgroup>
-        <h1>Forums</h1>
-      </hgroup>
-    </div>
-    <div class="row">
-      <div class="col-3">
-        <h1>First Section Col1</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam cursus maximus quam et dignissim. Praesent felis arcu, 
-		euismod et ullamcorper ut, condimentum ut ante. Vestibulum vel libero commodo, aliquam libero eu, gravida arcu. Proin scelerisque faucibus
-		ligula quis efficitur. Donec at sollicitudin purus, suscipit tempus augue. Sed imperdiet volutpat sapien at hendrerit. Mauris egestas ex a 
-		quam tincidunt gravida. Quisque interdum tempor lacinia. Nulla eget varius purus. Integer non sollicitudin dui. Phasellus sem turpis, maximus 
-		in auctor vulputate, porta id nunc.</p>
-      </div>
-      <div class="col-3">
-        <h1>First Section Col2</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque imperdiet est id leo facilisis, 
-		quis egestas erat vehicula. Aenean nec facilisis leo, et tristique lorem. Aliquam porttitor, elit ac ornare lacinia,
-		sapien augue sagittis dolor, tempor ultricies lorem arcu et ante. Nulla facilisi. Praesent facilisis lacus at blandit maximus.
-		Ut at libero nisi. Cras eu augue tellus. Nam pretium eget nisi non viverra. Maecenas eget tincidunt nibh, vitae interdum dolor.</p>
-      </div>
-      <div class="col-3">
-        <h1>First Section Col3</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac nibh dolor.
-		Cras rutrum molestie ligula posuere hendrerit. Donec luctus vitae elit in gravida. 
-		Duis in viverra nunc. Nunc et metus blandit, blandit quam in, laoreet mi. In vitae mauris sit amet tellus dictum rhoncus malesuada non arcu.
-		Ut lacus lacus, dignissim at commodo id, dapibus sed felis. Cras in nunc id est lobortis euismod. Sed egestas nulla et augue sagittis lacinia.
-		Quisque finibus bibendum risus, vitae accumsan ante mollis ac. Aliquam fermentum, mauris eu gravida dictum, tortor risus finibus nibh,
-		in tincidunt velit tortor vehicula mi.</p>
-      </div>
-    </div>
-    <div class="parallax p2" id="section-2">
-      <hgroup>
-        <h1>Well</h1>
-        <h2>This is some bold info!</h2>
-      </hgroup>
-    </div>
-    <div class="row">
-      <div class="col-3">
-        <h1>First Section Col1</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam cursus maximus quam et dignissim. 
-		Praesent felis arcu, euismod et ullamcorper ut, condimentum ut ante. Vestibulum vel libero commodo, 
-		aliquam libero eu, gravida arcu. Proin scelerisque faucibus ligula quis efficitur. Donec at sollicitudin purus, 
-		suscipit tempus augue. Sed imperdiet volutpat sapien at hendrerit. Mauris egestas ex a quam tincidunt gravida.
-		Quisque interdum tempor lacinia. Nulla eget varius purus. Integer non sollicitudin dui. Phasellus sem turpis,
-		maximus in auctor vulputate, porta id nunc.</p>
-      </div>
-      <div class="col-3">
-        <h1>First Section Col2</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque imperdiet est id leo facilisis,
-		quis egestas erat vehicula. Aenean nec facilisis leo, et tristique lorem. Aliquam porttitor, elit ac ornare lacinia,
-		sapien augue sagittis dolor, tempor ultricies lorem arcu et ante. Nulla facilisi. Praesent facilisis lacus at blandit maximus.
-		Ut at libero nisi. Cras eu augue tellus. Nam pretium eget nisi non viverra. Maecenas eget tincidunt nibh, vitae interdum dolor.</p>
-      </div>
-      <div class="col-3">
-        <h1>First Section Col3</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac nibh dolor.
-		Cras rutrum molestie ligula posuere hendrerit. Donec luctus vitae elit in gravida.
-		Duis in viverra nunc. Nunc et metus blandit, blandit quam in, laoreet mi. 
-		In vitae mauris sit amet tellus dictum rhoncus malesuada non arcu. Ut lacus lacus, dignissim at commodo id,
-		dapibus sed felis. Cras in nunc id est lobortis euismod. Sed egestas nulla et augue sagittis lacinia. Quisque finibus bibendum risus,
-		vitae accumsan ante mollis ac. Aliquam fermentum, mauris eu gravida dictum, tortor risus finibus nibh, in tincidunt velit tortor vehicula mi.</p>
-      </div>
-    </div>
-    <div class="parallax p3">
-      <hgroup>
-        <h1>Well</h1>
-        <h2>This is some bold info!</h2>
-      </hgroup>
-    </div>
-    <footer>
-      <div class="row" id="section-3">
-        <div class="col-3">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum interdum tortor ac dui malesuada,
-		  id molestie elit aliquam. Fusce laoreet nisl id tellus molestie mattis. Fusce vitae ante quis augue imperdiet rutrum a vitae purus.
-		  Etiam tincidunt enim id turpis varius, in condimentum elit.</p>
-        </div>
-      </div>
-      <div class="footer-copyright">
-        <div class="container">
-          © 2021 Team Doge, All rights reserved.
-        </div>
-      </div>
-    </footer>
-  </body>
-</html>
-<!-- partial -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="./script.js"></script>
+    </html>
+<?php
+  if (isset($_POST["title"])
+    && isset($_POST["message"])
+    && isset($_COOKIE['id']))
+  {
+    //send the frontend shit over to the backend
+    $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+    $request = array();
+    $request['type'] = "create_post";
+    $request['session_id'] = $_COOKIE['id'];
+    $request['title'] = $_POST["title"];
+    $request['message'] = $_POST["message"];
+    $response = $client->send_request($request);
+    if ($response["success"])
+    {
+			?>
+      <script type="text/javascript">
+        //alert with response message
+        alert("Thanks for submitting your post");
+        window.location.href = "/forum.php";
+      </script>
+    <?php
+    }
+  }
+  elseif(isset($_POST["post_id"])
+        && isset($_POST["reply_message"]))
+  {
+    //send the frontend shit over to the backend
+    $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+    $request = array();
+    $request['type'] = "create_reply";
+    $request['session_id'] = $_COOKIE['id'];
+    $request['post_id'] = $_POST["post_id"];
+    $request['reply_message'] = $_POST["reply_message"];
+    $response = $client->send_request($request);
+    if ($response["success"])
+    {
+      ?>
+      <script type="text/javascript">
+        //alert with response message
+        alert("Thanks for submitting your reply");
+        window.location.href = "/forum.php";
+      </script>
+    <?php
+    }
+    else
+    {
+      ?>
+      <script type="text/javascript">
+        //alert with response message
+        alert("Invalid Post ID");
+        window.location.href = "/forum.php";
+      </script>
+    <?php
+    }
+  }
+  else
+  {
+  //validate the session and display the posts
+  $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+  $request = array();
+  $request['type'] = "show_posts";
+  $request['session_id'] = $_COOKIE['id'];
+  $response = $client->send_request($request);
+  if ($response["success"] == false)
+  {
+			?>
+        <script type="text/javascript">
+          //alert with response message
+          alert("session expired");
+          window.location.href = "/login.php";
+        </script>
+			<?php
+  }
 
-</body>
-</html>
+  if (empty($response["posts"]))
+  {
+    //html no posts to display
+    ?>
+      <div class="container">
+        <div class="row">
+          <div class="parallax p1">
+            <h1>No posts to display</h1>
+          </div>
+        </div>
+      </div>
+    <?php
+  }
+  else
+  {
+    foreach ($response["posts"] as $post)
+    {
+      ?>
+      </html>
+      <div class="post">
+        <div class="post-header">
+        <h1><?php echo "Post ID: " . $post["post_id"]; ?></h1>
+          <h1><?php echo "Title " . $post["title"]; ?></h1>
+          <h2><?php echo "Message: " . $post["message"]; ?></h2>
+          <h3><?php echo "Posters name: " . $post["fname"] . " ". $post["lname"]; ?></h3>
+          <h3></h3>
+      </div>
+        </div>
+      </div>
+      <?php
+    }
+  }
+  }
+?>
+<div class="parallax p1" id="section-1">
+    <hgroup>
+      <h1>Reply to post</h1>
+        <form name="replyform" id="replyform" method="POST">
+            <label for="post_id">Enter post id of post to reply to:</label><br>
+            <input type="text" id="post_id" name="post_id"><br><br>
+            <label for="reply_message">message:</label><br>
+            <input type="text" id="reply_message" name="reply_message"><br><br>
+            <input type="submit" value="submit"><br>
+        </form>
+    </hgroup>
+</div>
+
+<div class="parallax p1" id="section-1">
+    <hgroup>
+      <h1>New Post</h1>
+        <form name="postform" id="postform" method="POST">
+            <label for="title">title:</label><br>
+            <input type="text" id="title" name="title"><br><br>
+            <label for="message">message:</label><br>
+            <input type="text" id="message" name="message"><br><br>
+            <input type="submit" value="submit"><br>
+        </form>
+    </hgroup>
+</div>
+
+
+
+
+
+
+
+
+
