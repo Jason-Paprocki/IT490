@@ -134,7 +134,7 @@
     {
       ?>
       </html>
-      <div class="post">
+      <div style="border-style: solid;border-width: medium;  float:left;width:50%; height:500px;" class="post">
         <div class="post-header">
         <h1><?php echo "Post ID: " . $post["post_id"]; ?></h1>
           <h1><?php echo "Title " . $post["title"]; ?></h1>
