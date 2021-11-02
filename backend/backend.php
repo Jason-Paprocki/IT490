@@ -25,13 +25,25 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 		{
 			
 			$stmt = $db->prepare($query);
-			$stmt->execute($query_args) or throw new Exception(print_r($stmt->errorInfo(), true));
+			$stmt->execute($query_args);
+			//throw exception with the shit
+			if($stmt->errorCode() != "00000")
+			{
+				$error = $stmt->errorInfo();
+				throw new Exception($error[2]);
+			}
 		}
 		else
 		{
 			$stmt = $db->prepare($query);
-			$stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
-		}
+			$stmt->execute();
+			//throw exception with the shit
+			if($stmt->errorCode() != "00000")
+			{
+				$error = $stmt->errorInfo();
+				throw new Exception($error[2]);
+			}
+}
 		$result = $stmt->fetchAll();
 		//if result is empty, return false
 		if(empty($result))
@@ -257,14 +269,14 @@ function create_reply($cookie,$post_id,$reply_message){
 		{
 			$fname = $result[0]['fname'];
 			$lname = $result[0]['lname'];
-			$post_id = uniqid();
+			$new_post_id = uniqid();
 			$message_id = 1;
 			$stmt = "INSERT INTO `Forum`
 						(fname, lname, post_id, title, message_id, message) VALUES
 						(:fname, :lname, :post_id, :title, :message_id, :message)";
 			$params = array(":fname"=> $fname,
 							":lname"=> $lname,
-							":post_id"=> $post_id,
+							":post_id"=> $new_post_id,
 							":title"=> "reply to " . $post_id,
 							":message_id"=> $message_id,
 							":message"=> $reply_message);
