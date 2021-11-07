@@ -328,6 +328,81 @@ function request_processor($req){
 	}
 }
 
+function insert($pname,$species,$pic,$zip)
+{
+	$response = array();
+    try
+    {
+        //this is a 13 character thing; alphanumeric
+		$response["cookie"] = uniqid();
+		//create some cool id
+		$id = md5(uniqid(rand(), true));
+		//prepare database variables
+        $stmt = "INSERT INTO `Accounts`
+                    (pname, species, pic, zip) VALUES
+                    (:pname, :species, :pic, :zip)";
+        $params = array(":pname" => $pname,
+                        ":species"=> $species, 
+                        ":cookie"=> $response["cookie"],
+                        ":pic"=> $pic,
+                        ":zip"=> $zip);
+        //send to database
+        send_sql_query_to_databse(true,$stmt,$params);
+        //make the response true and send to frontend
+        $response["success"] = true;
+        //return the response to the server
+        return $response;
+    }
+    catch(Exception $e)
+    {
+		//echo the error out to stdout
+		echo $e->getMessage();
+		//send the error
+		send_error(strval($e->getMessage()));
+		$response["success"] = false;
+		return $response;
+		exit("send error\n");
+	}
+}
+
+function match($pname,$species,$pic,$zip){
+	$response = array();
+	try
+	{
+		$stmt = "SELECT pname, species, pic, zip from `Accounts`";
+		$params = array(":pname" => $pname,
+						":species"=> $species,
+						":pic"=> $pic,
+						":zip"=> $zip);
+		$result = send_sql_query_to_databse(true,$stmt,$params);
+		if(!empty($result))
+		{
+            $pname = $result[0]['pname'];
+            $species = $species[0]['species'];
+            $pic = $pic[0]['pic'];
+            $zip = $zip[0]['zip'];
+			send_sql_query_to_databse(true,$stmt,$params);
+			$response["success"] = true;
+			return $response;
+		}
+		else
+		{
+			$response["success"] = false;
+			$response["msg"] = "Fill in the required fields";
+			return $response;
+		}
+	}
+	catch(Exception $e){
+		//echo the error out to stdout
+		echo $e->getMessage();
+		//send the error
+		send_error(strval($e->getMessage()));
+		$response["success"] = false;
+		return $response;
+		exit("send error\n");
+	}
+}
+
 $server = new rabbitMQServer("testRabbitMQ.ini", "frontbackcomms");
 
 echo "Rabbit MQ Server Start" . PHP_EOL;
