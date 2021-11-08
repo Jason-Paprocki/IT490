@@ -4,11 +4,23 @@
   require_once('rabbit/get_host_info.inc');
   require_once('rabbit/rabbitMQLib.inc');
 
-  //check if id cookie is set
-  if(!isset($_COOKIE['id'])){
-    header("/login.php");
+  //if the length of cookie is less than 2, then it is not set
+  if (strlen($_COOKIE['id']) < 2)
+  {
+    header("Location: login.php");
     exit();
   }
+  //send error with rabbit
+  function send_error($error){
+    $client = new rabbitMQClient("errorReporting.ini","errorReporting");
+    $request = array();
+    $request['type'] = "Error";
+    $request['page'] = "forum";
+    $request['message'] = $error;
+    $response = $client->publish($request);
+    exit("sent error");
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +51,17 @@
 		
       </ul>
     </div>
+    <section id = "space area">
+        <!--- Created space to actually see the first post-->
+        <br>
+        <br>
+        <br>
+        <br>
+    </section>
     </html>
 <?php
+  try
+  {
   if (isset($_POST["title"])
     && isset($_POST["message"])
     && isset($_COOKIE['id']))
@@ -57,7 +78,6 @@
     {
 			?>
       <script type="text/javascript">
-        //alert with response message
         alert("Thanks for submitting your post");
         window.location.href = "/forum.php";
       </script>
@@ -148,6 +168,14 @@
     }
   }
   }
+  }
+  catch(Exception $e){
+    //echo the error out to stdout
+    echo $e->getMessage();
+    //send the error
+    send_error(strval($e->getMessage()));
+    exit("send error\n");
+}
 ?>
 <div class="parallax p1" id="section-1">
     <hgroup>

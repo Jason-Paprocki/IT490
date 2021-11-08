@@ -1,10 +1,19 @@
 <?php
-    ini_set('display_errors',1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
 	require_once('rabbit/path.inc');
 	require_once('rabbit/get_host_info.inc');
 	require_once('rabbit/rabbitMQLib.inc');
+    //send error with rabbit
+    function send_error($error){
+	$client = new rabbitMQClient("errorReporting.ini","errorReporting");
+	$request = array();
+	$request['type'] = "Error";
+    $request['page'] = "login";
+	$request['message'] = $error;
+	$response = $client->publish($request);
+	exit("sent error");
+    }
+    try
+    {
 	if(isset($_POST['email'])
 	&& isset($_POST['pword'])
 	)
@@ -33,17 +42,24 @@
                 window.location.replace("/account.php");
             </script>
         <?php
-            exit();
         }
         else
         {
             ?>
                 <script type="text/javascript">
-                alert("<?php echo $response["msg"]; ?>");
+                alert("Failed to login");
                 window.location.href = "login.php";
                 </script>
             <?php
         }
+    }
+    }
+    catch(Exception $e){
+        //echo the error out to stdout
+        echo $e->getMessage();
+        //send the error
+        send_error(strval($e->getMessage()));
+        exit("send error\n");
     }
 ?>
 <!DOCTYPE html>
