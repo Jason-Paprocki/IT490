@@ -1,6 +1,6 @@
 <?php
 
-//test commit
+//test commit 2
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
