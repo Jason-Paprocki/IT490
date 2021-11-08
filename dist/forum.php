@@ -15,6 +15,7 @@
     $client = new rabbitMQClient("errorReporting.ini","errorReporting");
     $request = array();
     $request['type'] = "Error";
+    $request['page'] = "forum";
     $request['message'] = $error;
     $response = $client->publish($request);
     exit("sent error");

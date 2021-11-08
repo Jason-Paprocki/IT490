@@ -11,6 +11,7 @@ function send_error($error){
 	$client = new rabbitMQClient("errorReporting.ini","errorReporting");
 	$request = array();
 	$request['type'] = "Error";
+	$request['page'] = "backend";
 	$request['message'] = $error;
 	$response = $client->publish($request);
 	exit("sent error");

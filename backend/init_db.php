@@ -10,6 +10,7 @@ function send_error($error){
 	$client = new rabbitMQClient("errorReporting.ini","errorReporting");
 	$request = array();
 	$request['type'] = "Error";
+    $request['page'] = "init_db";
 	$request['message'] = $error;
 	$response = $client->publish($request);
 	exit("sent error");
