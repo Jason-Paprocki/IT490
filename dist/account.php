@@ -1,16 +1,72 @@
 <?php
 
-  require_once('rabbit/path.inc');
-  require_once('rabbit/get_host_info.inc');
-  require_once('rabbit/rabbitMQLib.inc');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-  //check if id cookie is set
-  if(!isset($_COOKIE['id'])){
-    header("/login.php");
-    exit();
-  }
+require_once('rabbit/path.inc');
+require_once('rabbit/get_host_info.inc');
+require_once('rabbit/rabbitMQLib.inc');
+
+//if the length of cookie is less than 2, then it is not set
+if (strlen($_COOKIE['id']) < 2)
+{
+    header("Location: login.php");
+exit();
+}
+//send error with rabbit
+function send_error($error){
+    $client = new rabbitMQClient("errorReporting.ini","errorReporting");
+    $request = array();
+    $request['type'] = "Error";
+    $request['page'] = "forum";
+    $request['message'] = $error;
+    $response = $client->publish($request);
+    exit("sent error");
+}
 
 readfile('account.html');
+
+$pname = $_POST["pname"];
+$species = $_POST["species"];
+$pic = $_POST["pic"];
+$zip = $_POST["zip"];
+
+if(isset($_POST['pname'])
+&& isset($_POST['species'])
+&& isset($_POST['pic'])
+&& isset($_POST['zip']))
+{
+    //send the frontend over to the backend
+    $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+	$request = array();
+	$request['type'] = "insert";
+	$request['pname'] = $pname;
+	$request['species'] = $species;
+	$request['pic'] = $pic;
+	$request['zip'] = $zip;
+	$response = $client->send_request($request);
+	echo var_dump($response["success"]);
+	if($response["success"])
+    	{
+            $js_cookie = "id=" . $response["cookie"];
+        ?>
+            <script type="text/JavaScript">
+                window.location.replace("/friendmatcher.php");
+            </script>
+        <?php
+            exit();
+        }
+        else
+        {
+            ?>
+                <script type="text/javascript">
+                alert("<?php echo $response["msg"]; ?>");
+                window.location.href = "account.php";
+                </script>
+            <?php
+        }
+}
 /*
 echo "<script type='text/javascript'> 
 function readURL(input) {
