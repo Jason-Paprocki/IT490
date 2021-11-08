@@ -25,7 +25,7 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 		{
 			
 			$stmt = $db->prepare($query);
-			$stmt->execute($query_args);
+			$stmt->execute($query_args) or die(mysql_error());
 			//throw exception with the shit
 			if($stmt->errorCode() != "00000")
 			{
@@ -89,8 +89,8 @@ function register($email,$pass,$fname,$lname)
 		//create some cool id
 		$id = md5(uniqid(rand(), true));
 		
-		//hash the password using sha256
-		$pass = hash("sha256",$pass);
+		//hash the stuppid pass
+		$pass = password_hash($pass, PASSWORD_BCRYPT);
 
 		//prepare database variables
 		$stmt = "INSERT INTO `Users`
@@ -137,6 +137,7 @@ function login($email,$pass){
 			//verifies the hashed password with the one that the user provides
 			if(password_verify($pass, $userpassword))
 			{
+
 				//give the user a cookie
 				$response["cookie"] = uniqid();
 				//update the cookie in the database
@@ -182,7 +183,6 @@ function show_posts($cookie){
 			$params = array();
 			$result = send_sql_query_to_databse(false,$stmt,$params);
 			$response["posts"] = $result;
-			echo var_dump($response);
 			return $response;
 		}
 		else
@@ -301,32 +301,6 @@ function create_reply($cookie,$post_id,$reply_message){
 	}
 	
 }
-function request_processor($req){
-	echo var_dump($req);
-	try{
-	//Handle message type
-	$type = $req['type'];
-	switch($type){
-		case "login":
-			return login($req['email'], $req['password']);
-        case "register":
-            return register($req['email'], $req['password'],$req['fname'],$req['lname']);
-        case "show_posts":
-			return show_posts($req['session_id']);
-		case "create_post":
-			return create_post($req['session_id'],$req['title'],$req['message']);
-		case "create_reply":
-			return create_reply($req['session_id'],$req['post_id'],$req['reply_message']);
-		}
-	}
-	catch(Exception $e){
-		//echo the error out to stdout
-		echo $e->getMessage();
-		//send the error
-		send_error(strval($e->getMessage()));
-		exit("send error\n");
-	}
-}
 
 function insert($pname,$species,$pic,$zip)
 {
@@ -399,6 +373,32 @@ function match($pname,$species,$pic,$zip){
 		send_error(strval($e->getMessage()));
 		$response["success"] = false;
 		return $response;
+		exit("send error\n");
+	}
+}
+function request_processor($req){
+	echo var_dump($req);
+	try{
+	//Handle message type
+	$type = $req['type'];
+	switch($type){
+		case "login":
+			return login($req['email'], $req['password']);
+        case "register":
+            return register($req['email'], $req['password'],$req['fname'],$req['lname']);
+        case "show_posts":
+			return show_posts($req['session_id']);
+		case "create_post":
+			return create_post($req['session_id'],$req['title'],$req['message']);
+		case "create_reply":
+			return create_reply($req['session_id'],$req['post_id'],$req['reply_message']);
+		}
+	}
+	catch(Exception $e){
+		//echo the error out to stdout
+		echo $e->getMessage();
+		//send the error
+		send_error(strval($e->getMessage()));
 		exit("send error\n");
 	}
 }
