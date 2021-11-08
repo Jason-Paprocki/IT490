@@ -25,7 +25,7 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 		{
 			
 			$stmt = $db->prepare($query);
-			$stmt->execute($query_args) or die(mysql_error());
+			$stmt->execute($query_args);
 			//throw exception with the shit
 			if($stmt->errorCode() != "00000")
 			{

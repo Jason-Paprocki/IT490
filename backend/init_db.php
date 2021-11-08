@@ -15,32 +15,33 @@ function send_error($error){
 	exit("sent error");
 }
 
-
-
 try{
     $connection_string = "mysql:host=$dbhost;dbname=$dbdatabase;charset=utf8mb4";
     //CREATE THE PET_SERVICE DATABASE TO STORE THE DATA IN
 	$db = new PDO($connection_string, $dbuser, $dbpass);
-	echo "Connected to create database\n";
-	$stmt = $db->prepare("CREATE DATABASE IF NOT EXISTS Pet_Service");
-	$stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
+	echo "Connected to database\n";
+    
     //create users table
 	echo "Created to create Users table\n";
 	$stmt = $db->prepare(file_get_contents("sql_files/users.sql"));
-	$stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
+	$stmt->execute();
+    //throw exception with the shit
+    if($stmt->errorCode() != "00000")
+    {
+        $error = $stmt->errorInfo();
+        throw new Exception($error[2]);
+    }
+    
     //create forum table
     echo "Created to create Forum table\n";
-	$stmt = $db->prepare("create table if not exists `Forum` (
-                `fname` varchar(20) not null,
-                `lname` varchar(20) not null,
-                `post_id` varchar(13) not NULL,
-                `message_id` varchar(13),
-                `title` varchar(100) not null,
-                `message` varchar(1000) not null,
-				PRIMARY KEY (`post_id`)
-				) CHARACTER SET utf8 COLLATE utf8_general_ci"
-			);
-    $stmt->execute() or throw new Exception(print_r($stmt->errorInfo(), true));
+	$stmt = $db->prepare(file_get_contents("sql_files/forum.sql"));
+    $stmt->execute();
+    //throw exception with the shit
+    if($stmt->errorCode() != "00000")
+    {
+        $error = $stmt->errorInfo();
+        throw new Exception($error[2]);
+    }
 }
 catch(Exception $e){
     //echo the error out to stdout
