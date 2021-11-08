@@ -3,13 +3,13 @@
   require_once('rabbit/path.inc');
   require_once('rabbit/get_host_info.inc');
   require_once('rabbit/rabbitMQLib.inc');
-
-  //check if id cookie is set
-  if(!isset($_COOKIE['id'])){
-    header("/login.php");
-    exit();
-  }
 ?>
+<script type="text/JavaScript">
+//ceck if id cookie is set
+if(document.cookie.indexOf("id=") == -1){
+  window.location.href = "login.php";
+}
+</script>
 
 <!DOCTYPE html>
 <html lang="en" >

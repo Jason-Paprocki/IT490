@@ -1,7 +1,4 @@
 <?php
-    ini_set('display_errors',1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
 	require_once('rabbit/path.inc');
 	require_once('rabbit/get_host_info.inc');
 	require_once('rabbit/rabbitMQLib.inc');
@@ -33,13 +30,12 @@
                 window.location.replace("/account.php");
             </script>
         <?php
-            exit();
         }
         else
         {
             ?>
                 <script type="text/javascript">
-                alert("<?php echo $response["msg"]; ?>");
+                alert("Failed to login");
                 window.location.href = "login.php";
                 </script>
             <?php
