@@ -19,7 +19,7 @@ function send_error($error){
     $client = new rabbitMQClient("errorReporting.ini","errorReporting");
     $request = array();
     $request['type'] = "Error";
-    $request['page'] = "forum";
+    $request['page'] = "account";
     $request['message'] = $error;
     $response = $client->publish($request);
     exit("sent error");
@@ -29,11 +29,13 @@ readfile('account.html');
 
 $pname = $_POST["pname"];
 $species = $_POST["species"];
+$age = $_POST["age"];
 $pic = $_POST["pic"];
 $zip = $_POST["zip"];
 
 if(isset($_POST['pname'])
 && isset($_POST['species'])
+&& isset($_POST['age'])
 && isset($_POST['pic'])
 && isset($_POST['zip']))
 {
@@ -43,6 +45,7 @@ if(isset($_POST['pname'])
 	$request['type'] = "insert";
 	$request['pname'] = $pname;
 	$request['species'] = $species;
+  $request['age'] = $age;
 	$request['pic'] = $pic;
 	$request['zip'] = $zip;
 	$response = $client->send_request($request);

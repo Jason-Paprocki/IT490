@@ -303,7 +303,7 @@ function create_reply($cookie,$post_id,$reply_message){
 	
 }
 
-function insert($pname,$species,$pic,$zip)
+function insert($pname,$species,$age, $pic,$zip)
 {
 	$response = array();
     try
@@ -314,10 +314,11 @@ function insert($pname,$species,$pic,$zip)
 		$id = md5(uniqid(rand(), true));
 		//prepare database variables
         $stmt = "INSERT INTO `Accounts`
-                    (pname, species, pic, zip) VALUES
-                    (:pname, :species, :pic, :zip)";
+                    (pname, species, age, pic, zip) VALUES
+                    (:pname, :species, :age, :pic, :zip)";
         $params = array(":pname" => $pname,
-                        ":species"=> $species, 
+                        ":species"=> $species,
+						":age"=> $age, 
                         ":cookie"=> $response["cookie"],
                         ":pic"=> $pic,
                         ":zip"=> $zip);
@@ -340,13 +341,14 @@ function insert($pname,$species,$pic,$zip)
 	}
 }
 
-function match($pname,$species,$pic,$zip){
+function match($pname,$species,$age, $pic,$zip){
 	$response = array();
 	try
 	{
 		$stmt = "SELECT pname, species, pic, zip from `Accounts`";
 		$params = array(":pname" => $pname,
 						":species"=> $species,
+						":age"=> $age,
 						":pic"=> $pic,
 						":zip"=> $zip);
 		$result = send_sql_query_to_databse(true,$stmt,$params);
@@ -354,6 +356,7 @@ function match($pname,$species,$pic,$zip){
 		{
             $pname = $result[0]['pname'];
             $species = $species[0]['species'];
+			$age = $age[0]['age'];
             $pic = $pic[0]['pic'];
             $zip = $zip[0]['zip'];
 			send_sql_query_to_databse(true,$stmt,$params);
@@ -393,6 +396,10 @@ function request_processor($req){
 			return create_post($req['session_id'],$req['title'],$req['message']);
 		case "create_reply":
 			return create_reply($req['session_id'],$req['post_id'],$req['reply_message']);
+		case "insert":
+			return insert($req['pname'],$req['species'],$req['age'],$req['pic'],$req['zip']);
+		case "match":
+			return match($req['pname'],$req['species'],$req['age'],$req['pic'],$req['zip']);
 		}
 	}
 	catch(Exception $e){
