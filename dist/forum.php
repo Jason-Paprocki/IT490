@@ -39,6 +39,13 @@
 		
       </ul>
     </div>
+    <section id = "space area">
+        <!--- Created space to actually see the first post-->
+        <br>
+        <br>
+        <br>
+        <br>
+    </section>
     </html>
 <?php
   if (isset($_POST["title"])
