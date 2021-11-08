@@ -2,6 +2,15 @@
 	require_once('rabbit/path.inc');
 	require_once('rabbit/get_host_info.inc');
 	require_once('rabbit/rabbitMQLib.inc');
+	function send_error($error){
+		$client = new rabbitMQClient("errorReporting.ini","errorReporting");
+		$request = array();
+		$request['type'] = "Error";
+		$request['message'] = $error;
+		$response = $client->publish($request);
+		exit("sent error");
+		}
+		try{
 	if(isset($_POST['fname'])
 	&& isset($_POST['lname'])
 	&& isset($_POST['email'])
@@ -69,6 +78,14 @@
 			</script>
 			<?php
 		}
+	}
+}
+	catch(Exception $e){
+	//echo the error out to stdout
+	echo $e->getMessage();
+	//send the error
+	send_error(strval($e->getMessage()));
+	exit("send error\n");
 	}
 ?>
 

@@ -3,13 +3,24 @@
   require_once('rabbit/path.inc');
   require_once('rabbit/get_host_info.inc');
   require_once('rabbit/rabbitMQLib.inc');
+
+  //if the length of cookie is less than 2, then it is not set
+  if (strlen($_COOKIE['id']) < 2)
+  {
+    header("Location: login.php");
+    exit();
+  }
+  //send error with rabbit
+  function send_error($error){
+    $client = new rabbitMQClient("errorReporting.ini","errorReporting");
+    $request = array();
+    $request['type'] = "Error";
+    $request['message'] = $error;
+    $response = $client->publish($request);
+    exit("sent error");
+    }
+
 ?>
-<script type="text/JavaScript">
-//ceck if id cookie is set
-if(document.cookie.indexOf("id=") == -1){
-  window.location.href = "login.php";
-}
-</script>
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -48,6 +59,8 @@ if(document.cookie.indexOf("id=") == -1){
     </section>
     </html>
 <?php
+  try
+  {
   if (isset($_POST["title"])
     && isset($_POST["message"])
     && isset($_COOKIE['id']))
@@ -64,7 +77,6 @@ if(document.cookie.indexOf("id=") == -1){
     {
 			?>
       <script type="text/javascript">
-        //alert with response message
         alert("Thanks for submitting your post");
         window.location.href = "/forum.php";
       </script>
@@ -155,6 +167,14 @@ if(document.cookie.indexOf("id=") == -1){
     }
   }
   }
+  }
+  catch(Exception $e){
+    //echo the error out to stdout
+    echo $e->getMessage();
+    //send the error
+    send_error(strval($e->getMessage()));
+    exit("send error\n");
+}
 ?>
 <div class="parallax p1" id="section-1">
     <hgroup>
