@@ -69,16 +69,16 @@ if ($err) {
 	<tr>
 		<th>Type of Animal</th>
 		<th>Name</th>
-		<th>Country</th>
+		<th></th>
 	</tr>
 	<tr>
 		<td></td>
-		<td>Maria Anders</td>
+		<td>IMAGE</td>
 		<td></td>
 	</tr>
 	<tr>
 		<td>X</td>
-		<td>Miles</td>
+		<td>MILES</td>
 		<td>:)</td>
 	</tr>
 </table>
