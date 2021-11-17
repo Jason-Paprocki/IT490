@@ -47,7 +47,8 @@ if ($err) {
 } else {
 	echo $response;
 }
-
+/*<?php echo $pic; ?> */
+?>
 //basic api call for distance
 //use the api to get the distance between the two users
 //display the distance in miles
@@ -63,13 +64,31 @@ if ($err) {
 //bottom left has x -- make red?
 //bottom right has check -- make green?
 //bottom center has distance in miles
-
+<html>
+<table style="width:100%">
+	<tr>
+		<th>Type of Animal</th>
+		<th>Name</th>
+		<th>Country</th>
+	</tr>
+	<tr>
+		<td></td>
+		<td>Maria Anders</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>X</td>
+		<td>Miles</td>
+		<td>:)</td>
+	</tr>
+</table>
+</html>
 
 
 //all the way on the right has the message thing
 //dont know if we can do this in the same page
 //or if we need to make a new page
 
-/*<?php echo $pic; ?> */
 
-?>
+
+
