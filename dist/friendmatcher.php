@@ -77,9 +77,9 @@ if ($err) {
 		<td></td>
 	</tr>
 	<tr>
-		<td>X</td>
+		<td><img src="https://www.citypng.com/public/uploads/preview/png-red-round-close-x-icon-31631915146jpppmdzihs.png" alt="X" </td>
 		<td>MILES</td>
-		<td>:)</td>
+		<td><img src="https://image.pngaaa.com/573/3826573-middle.png" alt="Check" </td>
 	</tr>
 </table>
 </html>
