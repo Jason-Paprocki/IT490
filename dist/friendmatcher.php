@@ -67,8 +67,8 @@ if ($err) {
 <html>
 <table style="width:100%">
 	<tr>
-		<th>Type of Animal</th>
-		<th>Name</th>
+		<th>Type of Animal: </th>
+		<th>Name: </th>
 		<th></th>
 	</tr>
 	<tr>
@@ -78,7 +78,28 @@ if ($err) {
 	</tr>
 	<tr>
 		<td><img src="https://www.citypng.com/public/uploads/preview/png-red-round-close-x-icon-31631915146jpppmdzihs.png" alt="X" </td>
-		<td>MILES</td>
+		<td>Location
+            <button onclick="getLocation()">Try It</button>
+
+            <p id="demo"></p>
+
+            <script>
+                var x = document.getElementById("demo");
+
+                function getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(showPosition);
+                    } else {
+                        x.innerHTML = "Geolocation is not supported by this browser.";
+                    }
+                }
+
+                function showPosition(position) {
+                    x.innerHTML = "Latitude: " + position.coords.latitude +
+                        "<br>Longitude: " + position.coords.longitude;
+                }
+            </script>
+        </td>
 		<td><img src="https://image.pngaaa.com/573/3826573-middle.png" alt="Check" </td>
 	</tr>
 </table>
