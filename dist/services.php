@@ -1,4 +1,30 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once('rabbit/path.inc');
+require_once('rabbit/get_host_info.inc');
+require_once('rabbit/rabbitMQLib.inc');
+
+//if the length of cookie is less than 2, then it is not set
+if (strlen($_COOKIE['id']) < 2)
+{
+    header("Location: login.php");
+exit();
+}
+//send error with rabbit
+function send_error($error){
+    $client = new rabbitMQClient("errorReporting.ini","errorReporting");
+    $request = array();
+    $request['type'] = "Error";
+    $request['page'] = "account";
+    $request['message'] = $error;
+    $response = $client->publish($request);
+    exit("sent error");
+}
+
 //https://docs.microsoft.com/en-us/bingmaps/rest-services/locations/local-search
 //https://open.fda.gov/apis/animalandveterinary/event/how-to-use-the-endpoint/
 //https://www.programmableweb.com/api/petfinder
@@ -6,12 +32,30 @@
 //https://www.petmd.com/cat/wellness/essential-cat-vaccinations
 
 //https://dev.virtualearth.net/REST/v1/LocalSearch/?query=petshelter&userLocation=40.7357,-74.1724&key=AoCJK-YyuE35SvClpIX8bvsJHqU_KRDpcGMrTlj7PHa4Hy4pjzkYSjKSFyuNOZBO
+//api key= AIzaSyDqIfZ6J9Y2w3t0tiKC0KZeBW4bNkcThhk
+//https://maps.googleapis.com/maps/api/geocode/json?AIzaSyDqIfZ6J9Y2w3t0tiKC0KZeBW4bNkcThhk
 
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+
+<div id="googleMap" style="width:100%;height:400px;"></div>
+
+<script>
+function myMap() {
+var mapProp= {
+  center:new google.maps.LatLng(51.508742,-0.120850),
+  zoom:5,
+};
+var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqIfZ6J9Y2w3t0tiKC0KZeBW4bNkcThhk&callback=myMap"></script>
+
+
 	<title>Services</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<link rel="stylesheet" href="./style.css">
@@ -43,6 +87,7 @@
         $(".service").html(text);
     });
     </script>
+
 
 <br><br><br><br><br><br><br><br><br><br>
 
