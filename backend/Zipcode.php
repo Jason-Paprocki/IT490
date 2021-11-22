@@ -3,7 +3,7 @@
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-    CURLOPT_URL => "https://zipcodebase-zip-code-search.p.rapidapi.com/search?codes=10005",
+    CURLOPT_URL => "https://zipcodebase-zip-code-search.p.rapidapi.com/search?codes=07103",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_FOLLOWLOCATION => true,
     CURLOPT_ENCODING => "",
