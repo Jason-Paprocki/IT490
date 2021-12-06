@@ -42,4 +42,15 @@ function push($package, $target, $machine)
   return "Deployed " . $package;
   }
 
-
+function requestProcessor($request)
+{
+  switch ($request['type']) {
+    case "push":
+      return push($request['package'], $request['target'], $request['mach']);
+  }
+}
+//function end
+$server = new rabbitMQServer("pushMQ.ini", "testServer");
+$server->process_requests('requestProcessor');
+exit();
+?>
