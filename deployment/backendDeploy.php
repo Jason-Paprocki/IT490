@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-//rmq include
+
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQPush.inc');
@@ -23,14 +23,14 @@ function push($package, $target, $machine)
     case ("db"): {
       if (!isset($host[3])){
       exec("tar -xf /box.tar -C /");
-      exec("mysql -u root -ppasskey databsename < path to database");
+      exec("mysql -u root -ppasskey databasename < path to database");
     }
       break;
     }
     case ("bephp"): {
       exec("tar -xf /box.tar -C /");
       if (!isset($host[3])) {
-      exec("systemctl restart cine4_auth cine4_data cine4_log");
+      exec("systemctl restart backend files");
     }
       break;
     }
@@ -49,7 +49,7 @@ function requestProcessor($request)
       return push($request['package'], $request['target'], $request['mach']);
   }
 }
-//function end
+//closing
 $server = new rabbitMQServer("pushMQ.ini", "testServer");
 $server->process_requests('requestProcessor');
 exit();
