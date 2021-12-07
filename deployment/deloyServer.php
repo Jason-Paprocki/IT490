@@ -81,4 +81,55 @@ function deploy($package, $version, $target)
     return "package does not exist";
   }
 }
+function depreciate($package, $version)
+{
+  $con = createconnection();
+  exec("cp path to package" . $package . "-" . $version . ".tar path to package");
+  $sql = "UPDATE	Version as V SET	Deprecate = \"Y\" WHERE	V.PackageName = '" . $package . "' AND V.VersionNum = '" . $version . "'";
+  if ($con->query($sql) === TRUE) {
+    return $package." depreciated";
+  }
+}
 
+function rollback($package, $target)
+{
+  $con   = createconnection();
+  $query = "SELECT	max(V.VersionNum) FROM	Version as V WHERE	V.PackageName = '" . $package . "' AND V.Deprecate = 'N'";
+
+  $sql   = mysqli_query($con, $query);
+  $data  = array();
+  if ($row = mysqli_fetch_assoc($sql)) {
+    $version = $row['max(V.VersionNum)'];
+
+  }
+  if (deploy($package, $version, $target)) {
+    return $target . " rolledback to " . $package . " version " . $version;
+  } else {
+    return "rollback failed";
+  }
+}
+function requestProcessor($request)
+{
+  echo "received request" . PHP_EOL;
+  if (!isset($request['type'])) {
+    return "ERROR: unsupported message type";
+  }
+  switch ($request['type']) {
+    case "create":
+      return create($request['package'], $request['host']);
+    case "deploy":
+      return deploy($request['package'], $request['version'], $request['target']);
+    case "depreciate":
+      return depreciate($request['package'], $request['version']);
+    case "rollback":
+      return rollback($request['package'], $request['target']);
+  }
+  return array(
+    "returnCode" => '0',
+    'message' => "Server received request and processed"
+  );
+}
+$server = new rabbitMQServer("deployMQ.ini", "testServer");
+$server->process_requests('requestProcessor');
+exit();
+?>
