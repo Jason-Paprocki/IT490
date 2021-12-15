@@ -42,6 +42,7 @@ try{
 				`fileName` varchar(100) not null unique,
                 `version` int not null,
                 `passfail` bool,
+				`path` varchar(100) not null,
 				PRIMARY KEY (`id`)
 				) CHARACTER SET utf8 COLLATE utf8_general_ci"
 			);
