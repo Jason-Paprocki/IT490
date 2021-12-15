@@ -37,13 +37,11 @@ catch(Exception $e){
 try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Created to create frontend table\n";
-	$stmt = $db->prepare("create table if not exists `Users` (
+	$stmt = $db->prepare("create table if not exists `frontend` (
 				`id` varchar(32) not null,
-				`email` varchar(100) not null unique,
-                `cookie` varchar(13),
-                `password` varchar(100) not null,
-                `fname` varchar(20) not null,
-                `lname` varchar(20) not null,
+				`fileName` varchar(100) not null unique,
+                `version` int not null,
+                `passfail` bool,
 				PRIMARY KEY (`id`)
 				) CHARACTER SET utf8 COLLATE utf8_general_ci"
 			);

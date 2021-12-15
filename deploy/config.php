@@ -1,7 +1,7 @@
 <?php
     //$dbhost="backend-VirtualBox";
     $dbhost="localhost";
-    $dbdatabase="Pet_Service";
+    $dbdatabase="deployment";
     $dbuser="root";
     $dbpass="backend";
 ?>
