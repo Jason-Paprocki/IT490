@@ -19,6 +19,7 @@ function send_error($error){
 //arg shit
 $entry_file = $argv[1];
 $version_number = $argv[2];
+$target = $argv[2];
 
 //zip file
 $zip_file = $entry_file.".zip";
@@ -40,6 +41,7 @@ $request = array();
 $request['type'] = "deploy";
 $request['package'] = $zip_file;
 $request['version'] = $version_number;
+$request['target'] = $target;
 
 $response = $client->send_request($request);
 

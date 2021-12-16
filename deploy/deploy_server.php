@@ -50,7 +50,54 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 	}	
 }
 
+function deploy($package, $version, $target)
+{
+	//this will take the args package, version, and target
+	//add package and version to the database
+	//look for the package in the directory
+	//add target path to the database
+	//unzip the thing and place it in the required place
+	//backend will be unzipped to a certain place
+	//frontend will be scp'd over to a certain place
+	//broker will scp'd???
+	//It will be deployed on QA for testing so latest version will be deployed here
+	//return true if successful
+	switch($target){
+		case "frontend":
+			//prepare statement to inset package and version into fronteend table
+			$table = "frontend"
+		case "backend":
+			//prepare statement to inset package and version into backend table
+			$table = "backend"
+		case "broker":
+			//prepare statement to inset package and version into broker table
+			$table = "broker"
+	}
 
+	//prepare statement to insert package and version into database
+	$stmt = "INSERT INTO `$table` (`package`, `version`) VALUES (:package, :version)";
+	$params = array(":package" => $package, ":version" => $version);
+	//send to database
+	$result = send_sql_query_to_databse(true,$stmt,$params);
+
+	//return the response to the server
+	$response["success"] = true;
+	return $response;
+
+}
+function deploy_pass()
+{
+	//takes the package and version
+	//marks the package as passed QA
+	//scp over to production
+}
+
+function deploy_fail()
+{
+	//takes the package and version
+	//marks the package as failed QA
+	//revert QA to last table marked true on pass fail
+}
 
 function request_processor($req){
 	echo var_dump($req);
@@ -59,7 +106,7 @@ function request_processor($req){
 	$type = $req['type'];
 	switch($type){
 		case "deploy":
-			return deploy($req['package'], $req['version']);
+			return deploy($req['package'], $req['version'], $req['target']);
 		}
 	}
 	catch(Exception $e){
