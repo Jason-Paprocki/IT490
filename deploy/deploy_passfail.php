@@ -22,8 +22,17 @@ $version_number = $argv[2];
 $target = $argv[3];
 $passfail = $argv[4];
 
-//if passfail is not either "pass" or "fail" then exit
-if ($passfail != "pass" && $passfail != "fail")
+
+//set passfail to deploypass or fail for request type
+if($passfail == "pass")
+{
+    $type = "deploy_pass";
+}
+else if($passfail == "fail")
+{
+    $type = "deploy_fail";
+}
+else
 {
     echo "invalid passfail";
     exit();
@@ -33,7 +42,7 @@ if ($passfail != "pass" && $passfail != "fail")
 $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 $request = array();
 
-$request['type'] = "deploy";
+$request['type'] = $type;
 $request['package'] = $entry_file;
 $request['version'] = $version_number;
 $request['target'] = $target;
