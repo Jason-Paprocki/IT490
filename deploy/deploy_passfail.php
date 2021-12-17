@@ -20,36 +20,16 @@ function send_error($error){
 $entry_file = $argv[1];
 $version_number = $argv[2];
 $target = $argv[3];
+$passfail = $argv[4];
 
-if ($target == "backend")
+//if passfail is not either "pass" or "fail" then exit
+if ($passfail != "pass" && $passfail != "fail")
 {
-	$target = "backend";
-}
-else if ($target == "frontend")
-{
-	$target = "frontend";
-}
-else
-{
-	echo "invalid target";
-	exit();
+    echo "invalid passfail";
+    exit();
 }
 
-$scp_command = "scp " . $entry_file . " backend@172.28.189.213:/home/backend/Desktop/" . $target . "/";
-$scp_result = shell_exec($scp_command);
-
-//check if scp_result has no errors
-if(strpos($scp_result,"No such file or directory") !== false)
-{
-	send_error("scp failed");
-	exit("scp failed\n");
-}
-//else then scp worked
-else
-{
-	print("scp worked\n");
-}
-
+//send this to deploy server 
 $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 $request = array();
 
@@ -57,6 +37,7 @@ $request['type'] = "deploy";
 $request['package'] = $entry_file;
 $request['version'] = $version_number;
 $request['target'] = $target;
+$request['passfail'] = $passfail;
 
 $response = $client->publish($request);
 

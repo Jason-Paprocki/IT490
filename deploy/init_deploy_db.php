@@ -39,10 +39,10 @@ try{
 	echo "Created to create frontend table\n";
 	$stmt = $db->prepare("create table if not exists `frontend` (
 				`id` varchar(32) not null,
-				`fileName` varchar(100) not null unique,
+				`package` varchar(100) not null unique,
                 `version` int not null,
-                `passfail` bool,
-				`path` varchar(100) not null,
+                `passfail` varchar(30),
+				`path` varchar(1000) not null,
 				PRIMARY KEY (`id`)
 				) CHARACTER SET utf8 COLLATE utf8_general_ci"
 			);
@@ -56,6 +56,22 @@ catch(Exception $e){
     //send the error
     send_error(strval($e->getMessage()));
     exit("send error\n");
+}
+//CREATE THE USERS TABLE
+try{
+	$db = new PDO($connection_string, $dbuser, $dbpass);
+	echo "Created to create backend table\n";
+	$stmt = $db->prepare("create table if not exists `backend` (
+				`id` varchar(32) not null,
+				`package` varchar(100) not null unique,
+                `version` int not null,
+                `passfail` varchar(30),
+				`path` varchar(1000) not null,
+				PRIMARY KEY (`id`)
+				) CHARACTER SET utf8 COLLATE utf8_general_ci"
+			);
+	$stmt->execute();
+	echo var_export($stmt->errorInfo(), true);
 }
 //sends error message to every machine
 catch(Exception $e){
