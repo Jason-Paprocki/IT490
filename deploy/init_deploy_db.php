@@ -33,7 +33,7 @@ catch(Exception $e){
     exit("send error\n");
 }
 
-//CREATE THE USERS TABLE
+//CREATE THE frontend TABLE
 try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Created to create frontend table\n";
@@ -57,7 +57,7 @@ catch(Exception $e){
     send_error(strval($e->getMessage()));
     exit("send error\n");
 }
-//CREATE THE USERS TABLE
+//CREATE THE backend TABLE
 try{
 	$db = new PDO($connection_string, $dbuser, $dbpass);
 	echo "Created to create backend table\n";
