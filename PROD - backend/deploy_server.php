@@ -26,12 +26,6 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 			$stmt->execute($query_args);
 			//print errors
 			$error = $stmt->errorInfo();
-			if($error[0] != "00000")
-			{
-				echo "error: " . $error[2] . "\n";
-				send_error(strval($error[2]));
-				exit("send error\n");
-			}
 		}
 		else
 		{
@@ -40,8 +34,14 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 			//print error
 			$error = $stmt->errorInfo();
 		}
+		if($error[0] != "00000")
+		{
+			echo "error: " . $error[2] . "\n";
+			send_error(strval($error[2]));
+			exit("send error\n");
+		}
 		$result = $stmt->fetchAll();
-
+		return $result;
 	}
 	catch(Exception $e){
 		//echo the error out to stdout
@@ -72,7 +72,7 @@ function deploy($package, $version, $target)
 			//send to database
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 
-			//scp package over
+			//scp package over to QA backend
 			$scp_command = "scp /home/backend/Desktop/frontend/" . $package . " frontend@172.28.226.7:/var/www/html/";
 			$scp_result = shell_exec($scp_command);
 			return;
@@ -94,7 +94,7 @@ function deploy($package, $version, $target)
 			//send to database
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 
-			//scp package over
+			//scp package over to QA backend
 			$scp_command = "scp /home/backend/Desktop/backend/" . $package . " backend@172.28.189.213:/home/backend/Music/backend/";
 			$scp_result = shell_exec($scp_command);
 			return;
@@ -109,6 +109,12 @@ function deploy_pass($package, $version, $target)
 	switch($target){
 
 		case "frontend":
+			//set the passfail to passed 
+			$stmt = "UPDATE `frontend` SET `passfail` = 'passed' WHERE `package` = :package AND `version` = :version";
+			$params = array(":package" => $package, ":version" => $version);
+			//send to database
+			$result = send_sql_query_to_databse(true,$stmt,$params);
+
 			//select the path from the frontend table with matching packages and version
 			$stmt = "SELECT `path` FROM `frontend` WHERE `package` = :package AND `version` = :version";
 			$params = array(":package" => $package, ":version" => $version);
@@ -116,49 +122,43 @@ function deploy_pass($package, $version, $target)
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 			//get the path
 			$path = $result[0]['path'];
-			//set the passfail to passed 
-			$stmt = "UPDATE `frontend` SET `passfail` = 'passed' WHERE `package` = :package AND `version` = :version";
-			echo "?????????????????????????";
-			$params = array(":package" => $package, ":version" => $version);
-			//send to database
-			$result = send_sql_query_to_databse(true,$stmt,$params);
-
-			//cp contents of package to a file with the same name but remove last character from the path
-			$command = "cp " . $path . " " . substr($path, 0, -1);
-			shell_exec($command);
 
 			//package is path to the cp file
 			$package = substr($path, 0, -1);
 
+			//cp contents of package to a file with the same name but remove last character from the path
+			$command = "cp " . $path . " " . $package;
+			shell_exec($command);
+
 			//scp over to production
-			$scp_command = "scp /home/backend/Desktop/frontend/" . $package . " frontend@172.28.21.35:/var/www/html/";
+			$scp_command = "scp " . $package . " frontend@172.28.21.35:/var/www/html/";
 			$scp_result = shell_exec($scp_command);
 			return;
 
-
 		case "backend":
-			//select the path from the backend table with matching packages and version
+			//set the passfail to passed 
+			$stmt = "UPDATE `backend` SET `passfail` = 'passed' WHERE `package` = :package AND `version` = :version";
+			$params = array(":package" => $package, ":version" => $version);
+			//send to database
+			$result = send_sql_query_to_databse(true,$stmt,$params);
+
+			//select the path from the frontend table with matching packages and version
 			$stmt = "SELECT `path` FROM `backend` WHERE `package` = :package AND `version` = :version";
 			$params = array(":package" => $package, ":version" => $version);
 			//send to database
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 			//get the path
 			$path = $result[0]['path'];
-			//set the passfail to passed
-			$stmt = "UPDATE `backend` SET `passfail` = 'passed' WHERE `package` = :package AND `version` = :version";
-			$params = array(":package" => $package, ":version" => $version);
-			//send to database
-			$result = send_sql_query_to_databse(true,$stmt,$params);
-
-			//cp contents of package to a file with the same name but remove last character from the path
-			$command = "cp " . $path . " " . substr($path, 0, -1);
-			shell_exec($command);
 
 			//package is path to the cp file
 			$package = substr($path, 0, -1);
 
+			//cp contents of package to a file with the same name but remove last character from the path
+			$command = "cp " . $path . " " . $package;
+			shell_exec($command);
+
 			//scp over to production
-			$scp_command = "scp /home/backend/Desktop/backend/" . $package . " backend@172.28.26.112:/home/backend/Music/backend/";
+			$scp_command = "scp " . $package . " backend@172.28.26.112:/home/backend/Music/backend/";
 			$scp_result = shell_exec($scp_command);
 			return;
 	}
@@ -166,41 +166,30 @@ function deploy_pass($package, $version, $target)
 
 function deploy_fail($package, $version, $target)
 {
-	switch($target){
-		case "frontend":
-			//select the path from the frontend table with matching packages and version
-			$stmt = "SELECT `path` FROM `frontend` WHERE `package` = :package AND `version` = :version";
-			$params = array(":package" => $package, ":version" => $version);
-			//send to database
-			$result = send_sql_query_to_databse(true,$stmt,$params);
-			//get the path
-			$path = $result[0]['path'];
-			//set the passfail to failed
-			$stmt = "UPDATE `frontend` SET `passfail` = 'failed' WHERE `package` = :package AND `version` = :version";
-			$params = array(":package" => $package, ":version" => $version);
-			//send to database
-			$result = send_sql_query_to_databse(true,$stmt,$params);
-			return;
+		switch($target){
 
-		case "backend":
-			//select the path from the backend table with matching packages and version
-			$stmt = "SELECT `path` FROM `backend` WHERE `package` = :package AND `version` = :version";
-			$params = array(":package" => $package, ":version" => $version);
-			//send to database
-			$result = send_sql_query_to_databse(true,$stmt,$params);
-			
-			//set the passfail to failed
-			$stmt = "UPDATE `backend` SET `passfail` = 'failed' WHERE `package` = :package AND `version` = :version";
+		case "frontend":
+			//set the passfail to passed 
+			$stmt = "UPDATE `frontend` SET `passfail` = 'fail' WHERE `package` = :package AND `version` = :version";
 			$params = array(":package" => $package, ":version" => $version);
 			//send to database
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 			return;
-		}
+			
+		case "backend":
+			//set the passfail to passed 
+			$stmt = "UPDATE `backend` SET `passfail` = 'fail' WHERE `package` = :package AND `version` = :version";
+			$params = array(":package" => $package, ":version" => $version);
+			//send to database
+			$result = send_sql_query_to_databse(true,$stmt,$params);
+			return;
+	}
 }
 
 function rollback($package, $version, $target)
 {
 	switch($target){
+
 		case "frontend":
 			//select the path from the frontend table with matching packages and version
 			$stmt = "SELECT `path` FROM `frontend` WHERE `package` = :package AND `version` = :version";
@@ -209,43 +198,37 @@ function rollback($package, $version, $target)
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 			//get the path
 			$path = $result[0]['path'];
-			
-			//cp contents of package to a file with the same name but remove last character from the path
-			$command = "cp " . $path . " " . substr($path, 0, -1);
-			shell_exec($command);
 
 			//package is path to the cp file
 			$package = substr($path, 0, -1);
 
-			//scp over to frontend QA server
-			$scp_command = "scp /home/backend/Desktop/frontend/" . $package . " frontend@172.28.226.7:/var/www/html/";
+			//cp contents of package to a file with the same name but remove last character from the path
+			$command = "cp " . $path . " " . $package;
+			shell_exec($command);
+
+			//scp package over to QA
+			$scp_command = "scp " . $package . " frontend@172.28.226.7:/var/www/html/";
 			$scp_result = shell_exec($scp_command);
 			return;
 
-
 		case "backend":
-			//select the path from the backend table with matching packages and version
+			//select the path from the frontend table with matching packages and version
 			$stmt = "SELECT `path` FROM `backend` WHERE `package` = :package AND `version` = :version";
 			$params = array(":package" => $package, ":version" => $version);
 			//send to database
 			$result = send_sql_query_to_databse(true,$stmt,$params);
 			//get the path
 			$path = $result[0]['path'];
-			//set the passfail to passed
-			$stmt = "UPDATE `backend` SET `passfail` = 'passed' WHERE `package` = :package AND `version` = :version";
-			$params = array(":package" => $package, ":version" => $version);
-			//send to database
-			$result = send_sql_query_to_databse(true,$stmt,$params);
-
-			//cp contents of package to a file with the same name but remove last character from the path
-			$command = "cp " . $path . " " . substr($path, 0, -1);
-			shell_exec($command);
 
 			//package is path to the cp file
 			$package = substr($path, 0, -1);
 
-			//scp over to production
-			$scp_command = "scp /home/backend/Desktop/backend/" . $package . " backend@172.28.189.213:/home/backend/Music/backend/";
+			//cp contents of package to a file with the same name but remove last character from the path
+			$command = "cp " . $path . " " . $package;
+			shell_exec($command);
+
+			//scp package over to QA backend
+			$scp_command = "scp " . $package . " backend@172.28.189.213:/home/backend/Music/backend/";
 			$scp_result = shell_exec($scp_command);
 			return;
 	}
