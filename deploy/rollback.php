@@ -38,7 +38,7 @@ else
 $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
 $request = array();
 
-$request['type'] = "deploy";
+$request['type'] = "rollback";
 $request['package'] = $entry_file;
 $request['version'] = $version_number;
 $request['target'] = $target;
