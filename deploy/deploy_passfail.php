@@ -39,7 +39,7 @@ else
 }
 
 //send this to deploy server 
-$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+$client = new rabbitMQClient("deployMQ.ini","deployment");
 $request = array();
 
 $request['type'] = $type;

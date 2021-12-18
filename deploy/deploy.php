@@ -50,7 +50,7 @@ else
 	print("scp worked\n");
 }
 
-$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+$client = new rabbitMQClient("deployMQ.ini","deployment");
 $request = array();
 
 $request['type'] = "deploy";

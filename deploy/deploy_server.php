@@ -256,7 +256,7 @@ function request_processor($req){
 	}
 }
 
-$server = new rabbitMQServer("testRabbitMQ.ini", "frontbackcomms");
+$server = new rabbitMQServer("deployMQ.ini","deployment");
 
 echo "Rabbit MQ Server Start" . PHP_EOL;
 $server->process_requests('request_processor');

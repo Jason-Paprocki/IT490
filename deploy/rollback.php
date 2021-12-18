@@ -35,7 +35,7 @@ else
 	exit();
 }
 
-$client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+$client = new rabbitMQClient("deployMQ.ini","deployment");
 $request = array();
 
 $request['type'] = "rollback";
