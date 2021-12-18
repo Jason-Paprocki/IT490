@@ -39,7 +39,7 @@ try{
 	echo "Created to create frontend table\n";
 	$stmt = $db->prepare("create table if not exists `frontend` (
 				`id` varchar(32) not null,
-				`package` varchar(100) not null unique,
+				`package` varchar(100) not null,
                 `version` int not null,
                 `passfail` varchar(30),
 				`path` varchar(1000) not null,
@@ -63,7 +63,7 @@ try{
 	echo "Created to create backend table\n";
 	$stmt = $db->prepare("create table if not exists `backend` (
 				`id` varchar(32) not null,
-				`package` varchar(100) not null unique,
+				`package` varchar(100) not null,
                 `version` int not null,
                 `passfail` varchar(30),
 				`path` varchar(1000) not null,
