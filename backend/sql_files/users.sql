@@ -1,9 +1,11 @@
-create table if not exists `Users` (
-`id` varchar(32) not null,
-`email` varchar(100) not null unique,
-`cookie` varchar(13),
-`password` varchar(100) not null,
-`fname` varchar(20) not null,
-`lname` varchar(20) not null,
-PRIMARY KEY (`id`)
-) CHARACTER SET utf8 COLLATE utf8_general_ci
+--  added highlight_token column in the table
+
+CREATE TABLE if not exists `users` (
+  `id` varchar(32) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `cookie` varchar(13) DEFAULT NULL,
+  `password` varchar(100) NOT NULL,
+  `fname` varchar(20) NOT NULL,
+  `lname` varchar(20) NOT NULL,
+  `highlight_token` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
