@@ -1,14 +1,32 @@
 <?php
-
+    ini_set('display_errors',1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
   require_once('rabbit/path.inc');
   require_once('rabbit/get_host_info.inc');
   require_once('rabbit/rabbitMQLib.inc');
 
   //check if id cookie is set
-  if(!isset($_COOKIE['id'])){
+  if (strlen($_COOKIE['id']) < 2){
     header("/login.php");
     exit();
   }
+  //get id cookie
+  $id = $_COOKIE['id'];
+  //send the frontend shit over to the backend
+  $client = new rabbitMQClient("testRabbitMQ.ini","frontbackcomms");
+  $request = array();
+  $request['type'] = "show_time";
+  $request['session_id'] = $id;
+  $response = $client->send_request($request);
+
+  if($response["success"])
+  {
+  ?>
+      <script type="text/JavaScript">
+          alert("<?php echo $response["loginTime"]; ?>");
+      </script>
+  <?php
 ?>
 <html>
 <head>
@@ -40,4 +58,3 @@
 
 </body>
 </html>
-/update only if not num

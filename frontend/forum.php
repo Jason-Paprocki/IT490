@@ -1,7 +1,7 @@
 <?php
 
   //check if id cookie is set
-  if(!isset($_COOKIE['id'])){
+  if (strlen($_COOKIE['id']) < 2){
     header("/login.php");
     exit();
   }

@@ -78,16 +78,20 @@ function register($email,$pass,$fname,$lname)
 		//hash the password using sha256
 		$pass = hash("sha256",$pass);
 
+		//added login time
+		$login_time = date("Y-m-d H:i:s");
+
 		//prepare database variables
 		$stmt = "INSERT INTO `Users`
-					(id, email, cookie, password, fname, lname) VALUES
-					(:id, :email, :cookie, :password, :fname, :lname)";
+					(id, email, cookie, password, fname, lname, loginTime) VALUES
+					(:id, :email, :cookie, :password, :fname, :lname, :loginTime)";
 		$params = array(":id" => $id,
 						":email"=> $email, 
 						":cookie"=> $response["cookie"],
 						":password"=> $pass,
 						":fname"=> $fname,
-						":lname"=> $lname);
+						":lname"=> $lname,
+						":loginTime"=> $login_time);
 		//send to database
 		send_sql_query_to_databse(true,$stmt,$params);
 		//make the response true and send to frontend
@@ -125,9 +129,12 @@ function login($email,$pass){
 			{
 				//give the user a cookie
 				$response["cookie"] = uniqid();
+				//set login time
+				$login_time = date("Y-m-d H:i:s");
 				//update the cookie in the database
-				$stmt = "UPDATE `Users` SET cookie = :cookie WHERE email = :email";
+				$stmt = "UPDATE `Users` SET cookie = :cookie, loginTime = :loginTime WHERE email = :email";
 				$params = array(":cookie"=> $response["cookie"],
+								":loginTime"=> $login_time,
 								":email"=> $email);
 				send_sql_query_to_databse(true,$stmt,$params);
 				//make the response true and send to frontend
@@ -213,21 +220,55 @@ function load_posts()
 		exit("send error\n");
 	}
 }
-function request_processor($req){
+function show_time($cookie)
+{
+	//select login time from database where cookie = cookie
+	$stmt = "SELECT loginTime from `Users` where cookie = :cookie LIMIT 1";
+	$params = array(":cookie"=> $cookie);
+	$result = send_sql_query_to_databse(true,$stmt,$params);
+	if(!empty($result))
+	{
+		//grab the login time
+		$login_time = $result[0]['loginTime'];
+		//return the login time
+		$response["success"] = true;
+		$response["loginTime"] = $login_time;
+		return $response;
+	}
+	else
+	{
+		return false;
+	}
+}
+function request_processor($req)
+{
 	echo var_dump($req);
-	try{
-	//Handle message type
-	$type = $req['type'];
-	switch($type){
-		case "login":
-			return login($req['email'], $req['password']);
-        case "register":
-            return register($req['email'], $req['password'],$req['fname'],$req['lname']);
-        case "validate_session":
-			return validate($req['session_id']);
+	try
+	{
+		//Handle message type
+		$type = $req['type'];
+		switch($type)
+		{
+			case "login":
+				return login($req['email'], $req['password']);
+			case "register":
+				return register($req['email'], $req['password'],$req['fname'],$req['lname']);
+			case "show_posts":
+				return show_posts($req['session_id']);
+			case "create_post":
+				return create_post($req['session_id'],$req['title'],$req['message']);
+			case "create_reply":
+				return create_reply($req['session_id'],$req['post_id'],$req['reply_message']);
+			case "insert":
+				return insert($req['pname'],$req['species'],$req['age'],$req['pic'],$req['zip']);
+			case "match":
+				return match($req['pname'],$req['species'],$req['age'],$req['pic'],$req['zip']);
+			case "show_time":
+				return show_time($req['session_id']);
 		}
 	}
-	catch(Exception $e){
+	catch(Exception $e)
+	{
 		//echo the error out to stdout
 		echo $e->getMessage();
 		//send the error
@@ -235,7 +276,6 @@ function request_processor($req){
 		exit("send error\n");
 	}
 }
-
 $server = new rabbitMQServer("testRabbitMQ.ini", "frontbackcomms");
 
 echo "Rabbit MQ Server Start" . PHP_EOL;

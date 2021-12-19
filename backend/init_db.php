@@ -43,6 +43,7 @@ try{
                 `password` varchar(100) not null,
                 `fname` varchar(20) not null,
                 `lname` varchar(20) not null,
+				`loginTime` varchar(20) not null,
 				PRIMARY KEY (`id`)
 				) CHARACTER SET utf8 COLLATE utf8_general_ci"
 			);
