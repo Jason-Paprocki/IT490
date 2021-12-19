@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-require_once('rabbit/path.inc');
-require_once('rabbit/get_host_info.inc');
-require_once('rabbit/rabbitMQLib.inc');
+require_once('/home/backend/Music/deploy/rabbit/path.inc');
+require_once('/home/backend/Music/deploy/rabbit/get_host_info.inc');
+require_once('/home/backend/Music/deploy/rabbit/rabbitMQLib.inc');
 
 //send error with rabbit
 function send_error($error){

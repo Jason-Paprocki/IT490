@@ -1,0 +1,11 @@
+[Unit]
+Description=Pet Service backend Server
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/php /home/backend/Music/backend/backend.php
+
+[Install]
+WantedBy=multi-user.target

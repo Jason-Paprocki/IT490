@@ -18,7 +18,7 @@
         $request['email'] = $email;
         $request['password'] = $passwd;
         $response = $client->send_request($request);
-        echo var_dump($response["success"]);
+
         if($response["success"])
         {
             $js_cookie = "id=" . $response["cookie"];
