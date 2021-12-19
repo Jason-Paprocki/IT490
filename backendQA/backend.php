@@ -25,24 +25,23 @@ function send_sql_query_to_databse($has_params,$query,$query_args){
 			
 			$stmt = $db->prepare($query);
 			$stmt->execute($query_args);
-			//throw exception with the shit
-			if($stmt->errorCode() != "00000")
-			{
-				$error = $stmt->errorInfo();
-				throw new Exception($error[2]);
-			}
+			//get errors
+			$error = $stmt->errorInfo();
 		}
 		else
 		{
 			$stmt = $db->prepare($query);
 			$stmt->execute();
-			//throw exception with the shit
-			if($stmt->errorCode() != "00000")
-			{
-				$error = $stmt->errorInfo();
-				throw new Exception($error[2]);
-			}
-}
+			//get errors
+			$error = $stmt->errorInfo();
+		}
+		if($error[0] != "00000")
+		{
+			echo "error: " . $error[2] . "\n";
+			send_error(strval($error[2]));
+			exit("send error\n");
+		}
+		
 		$result = $stmt->fetchAll();
 		//if result is empty, return false
 		if(empty($result))
@@ -88,8 +87,8 @@ function register($email,$pass,$fname,$lname)
 		//create some cool id
 		$id = md5(uniqid(rand(), true));
 		
-		//hash the password using sha256
-		$pass = hash("sha256",$pass);
+		//hash the password
+		$pass = password_hash($pass, PASSWORD_BCRYPT);
 
 		//added login time
 		$login_time = date("Y-m-d H:i:s");
@@ -140,8 +139,10 @@ function login($email,$pass)
 			//grab the user's password
 			$userpassword = $result[0]['password'];
 			//verifies the hashed password with the one that the user provides
+			echo"1";
 			if(password_verify($pass, $userpassword))
 			{
+				echo "2";
 				//give the user a cookie
 				$response["cookie"] = uniqid();
 				//set login time
@@ -154,6 +155,7 @@ function login($email,$pass)
 				send_sql_query_to_databse(true,$stmt,$params);
 				//make the response true and send to frontend
 				$response["success"] = true;
+				echo var_dump($response["cookie"]);
 				return $response;
 			}
 		}

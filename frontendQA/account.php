@@ -40,9 +40,10 @@ if($response["success"])
 {
 ?>
     <script type="text/JavaScript">
-        alert("<?php echo $response["loginTime"]; ?>");
+        alert("<?php echo "Your last login date and time was:" . $response["loginTime"]; ?>");
     </script>
- <?php
+<?php
+}
 if(isset($_POST['pname'])
 && isset($_POST['species'])
 && isset($_POST['age'])
