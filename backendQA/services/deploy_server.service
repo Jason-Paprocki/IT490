@@ -5,7 +5,7 @@ Description=Pet Service Deployment Server
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/bin/php /home/backend/Music/deploy/deploy_server.php
+ExecStart=/usr/bin/php /home/backend/Music/deployQA/deploy_server.php
 
 [Install]
 WantedBy=multi-user.target
