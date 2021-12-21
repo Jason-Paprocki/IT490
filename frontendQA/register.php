@@ -74,7 +74,7 @@
 			?>
 			<script type="text/javascript">
 				//alert with response message
-				alert("<?php echo $response["msg"]; ?>");
+				alert("<?php echo "failed to login"; ?>");
 				window.location.href = "/register.php";
 			</script>
 			<?php

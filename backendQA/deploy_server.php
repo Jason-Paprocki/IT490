@@ -131,7 +131,7 @@ function deploy_pass($package, $version, $target)
 			shell_exec($command);
 
 			//scp over to production
-			$scp_command = "scp " . $package . " frontend@172.28.21.35:/var/www/10.0.0.173/IT490/frontend/";
+			$scp_command = "scp " . $package . " frontend@172.28.176.18:/var/www/10.0.0.173/IT490/frontend/";
 			$scp_result = shell_exec($scp_command);
 			return;
 
@@ -158,7 +158,7 @@ function deploy_pass($package, $version, $target)
 			shell_exec($command);
 
 			//scp over to production
-			$scp_command = "scp " . $package . " backend@172.28.26.112:/home/backend/Music/backend/";
+			$scp_command = "scp " . $package . " backend@172.28.225.184:/home/backend/Music/backend/";
 			$scp_result = shell_exec($scp_command);
 			return;
 	}
